@@ -81,6 +81,7 @@ void load_sceene(char* file_name, object_manager* objm){
 
 }
 
+#https://github.com/ty-hob/render_project.git
 
 /*
 m material
