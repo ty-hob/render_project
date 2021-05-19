@@ -7,6 +7,8 @@
 void load_sceene(char* file_name, object_manager* objm){
 	printf("loading sceene: %s\n", file_name);
 
+	
+
 	char* line;
 	size_t n;
 	char descirp_char;
