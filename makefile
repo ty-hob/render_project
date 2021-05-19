@@ -1,10 +1,10 @@
 objdir = ./make_objects
 codedir = ./rendeng_code
 
-rendeng : $(objdir)/main.o $(objdir)/linalg.o $(objdir)/imgexp.o $(objdir)/objs.o
-	gcc -o rendeng $(objdir)/main.o $(objdir)/linalg.o $(objdir)/imgexp.o $(objdir)/objs.o -lm
+rendeng : $(objdir)/main.o $(objdir)/linalg.o $(objdir)/imgexp.o $(objdir)/objs.o $(objdir)/sceene.o
+	gcc -o rendeng $(objdir)/main.o $(objdir)/linalg.o $(objdir)/imgexp.o $(objdir)/objs.o $(objdir)/sceene.o -lm
 
-$(objdir)/main.o : $(codedir)/main.c $(codedir)/linalg.c $(codedir)/linalg.h $(codedir)/imgexp.c $(codedir)/imgexp.h $(codedir)/objs.c $(codedir)/objs.h
+$(objdir)/main.o : $(codedir)/main.c $(codedir)/linalg.c $(codedir)/linalg.h $(codedir)/imgexp.c $(codedir)/imgexp.h $(codedir)/objs.c $(codedir)/objs.h $(codedir)/sceene.c $(codedir)/sceene.h
 	gcc -o $(objdir)/main.o -c $(codedir)/main.c -lm
 
 $(objdir)/linalg.o : $(codedir)/linalg.c $(codedir)/linalg.h
@@ -15,6 +15,9 @@ $(objdir)/imgexp.o : $(codedir)/imgexp.c $(codedir)/imgexp.h
 
 $(objdir)/objs.o : $(codedir)/objs.c $(codedir)/objs.h
 	gcc -o $(objdir)/objs.o -c $(codedir)/objs.c
+
+$(objdir)/sceene.o : $(codedir)/sceene.c $(codedir)/sceene.h
+	gcc -o $(objdir)/sceene.o -c $(codedir)/sceene.c
 
 clean :
 	rm rendeng $(objdir)/main.o $(objdir)/linalg.o $(objdir)/imgexp.o $(objdir)/objs.o

@@ -389,6 +389,23 @@ vect3d plane_normal(vect3d intersection_point, void* obj_prt){
 
 // adding object code
 
+// adds materal to for use in objects
+void add_material(object_manager* objm, float dr, float dg, float db, int sc, float reflc, float refrc, float refri){
+	if(objm->material_count >= MAX_MATERIALS){
+		printf("max material count reached\n");
+		return;
+	}
+	objm->materials[objm->material_count].diffuse_color.r = dr;
+	objm->materials[objm->material_count].diffuse_color.g = dg;
+	objm->materials[objm->material_count].diffuse_color.b = db;
+	objm->materials[objm->material_count].shininess_const = sc;
+	objm->materials[objm->material_count].reflectivenes_const = reflc;
+	objm->materials[objm->material_count].refractivenes_const = refrc;
+	objm->materials[objm->material_count].refractive_index = refri;
+
+	objm->material_count += 1;
+}
+
 // adds a sphere to sceene 
 void add_sphere(object_manager* objm, float cx, float cy, float cz, float radius, material* mat){
 	if(objm->sphere_object_count >= MAX_SPHERE_OBJECTS){

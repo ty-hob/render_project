@@ -4,13 +4,14 @@
 #include "imgexp.h"
 #include "linalg.h"
 #include "objs.h"
+#include "sceene.h"
 
 
 rgb_color image_buffer[MAX_IMAGE_WIDTH*MAX_IMAGE_HEIGHT];
 
-int main(){
-	int image_width =  MAX_IMAGE_WIDTH;
-	int image_height =  MAX_IMAGE_HEIGHT;
+int main(int argc, char* argv[]){
+	int image_width =  1000;
+	int image_height =  1000;
 
 	// error check if the image size is not to big
 	if(image_width > MAX_IMAGE_WIDTH){
@@ -33,6 +34,8 @@ int main(){
 
 	light light_objects[MAX_LIGHT_OBJECTS];
 
+	material materials[MAX_MATERIALS];
+
 	object sceene_objects[MAX_SPHERE_OBJECTS + MAX_TRIANGLE_OBJECTS + MAX_PLANE_OBJECTS + MAX_TRIANGLE_OBJECTS];
 
 
@@ -53,45 +56,56 @@ int main(){
 	objm.light_objects = &light_objects[0];
 	objm.light_object_count = 0;
 
-	
+	objm.materials = &materials[0];
+	objm.material_count = 0;
 
-	material mat_plane1 = {{ 0,  0,  1}, 100,  0, 0, 5};
-	material mat_plane2 = {{ 0,  1, .5}, 100, .1, 0, 1};
-	material mat_plane3 = {{.8, .8,  0}, 100,  0, 0, 1};
-
-	material mat_ball1 =  {{ 1,  0,  0}, 100,   0, 1, 3};
-	material mat_ball2 =  {{ 0.1,  0.1,  0.1}, 100,   0, 1, 3};
-	material mat_ball3 =  {{.1, .1, .3}, 100,  .6, 0, 1};
-	material mat_ball4 =  {{.4, .7, .7}, 100,  .6, 0, 1};
-
-	material mat_trig1 =  {{.0,  .5, .0}, 10,  .1, 0, 0};
+	if(argc == 2){
+		load_sceene(argv[1], &objm);
+	}else{
+		printf("invalid usage: rendeng [scene file name]\n");
+		return 0;
+	}
 
 
-	add_light(&objm, -200, 0, 0, 1, 1, 1, 1, 1, 1);
+	//add_material(&objm, 1, 0, 0, 100, 0, 0, 5);	
+
+	// material mat_plane1 = {{ 0,  0,  1}, 100,  0, 0, 5};
+	// material mat_plane2 = {{ 0,  1, .5}, 100, .1, 0, 1};
+	// material mat_plane3 = {{.8, .8,  0}, 100,  0, 0, 1};
+
+	// material mat_ball1 =  {{ 1,  0,  0}, 100,   0, 1, 3};
+	// material mat_ball2 =  {{ 0.1,  0.1,  0.1}, 300,   0.5, 0.5, 3};
+	// material mat_ball3 =  {{.1, .1, .3}, 100,  .6, 0, 1};
+	// material mat_ball4 =  {{.4, .7, .7}, 100,  .6, 0, 1};
+
+	// material mat_trig1 =  {{.0,  .5, .0}, 10,  0, 0, 0};
+
+
+	//add_light(&objm, -200, 0, 0, 1, 1, 1, 1, 1, 1);
 	//add_light(&objm, -200, 500, 1900, 1, 1, 1, 1, 1, 1);
 	// add_light(&objm, 3000, 500, 1000, 1, 1, 1, 0, 0, 1);
 	//add_light(&objm, 200, -1000, 1000);
 	//add_triangle(&objm, 400, -50, 0, 400, 50, 0, 400, 0, 50, &mat_trig1, false);
 
 	//add_sphere(&objm,  900,  100,   -100, 100, &mat_ball1); // red
-	add_sphere(&objm,  400,  0, -100,  50, &mat_ball2); // green
-	add_sphere(&objm,  600,  150,  150, 100, &mat_ball3); // dark blue
-	add_sphere(&objm, 1000, -200,    0, 200, &mat_ball4); // light blue
-	add_sphere(&objm, 1200, 300,    0, 200, &mat_ball4); 
+	// add_sphere(&objm,  400,  0, -100,  50, &mat_ball2); // green
+	// add_sphere(&objm,  600,  150,  150, 100, &mat_ball3); // dark blue
+	// add_sphere(&objm, 1000, -200,    0, 200, &mat_ball4); // light blue
+	// add_sphere(&objm, 1200, 300,    0, 200, &mat_ball4); 
 
 	//add_sphere(&objm,  -210,  0,   0, 200, &mat_ball1);
 
-	add_plane(&objm, 0, 0, -500, 0, 0, 1, &mat_plane1);
-	add_plane(&objm, 4000, 0, 0, -1, 0, 0, &mat_plane2);
+	//add_plane(&objm, 0, 0, -500, 0, 0, 1, &objm.materials[0]);
+	//add_plane(&objm, 4000, 0, 0, -1, 0, 0, &mat_plane2);
 	//add_plane(&objm, 0, 0, 2200, 0, 0, -1, &mat_plane3);
 
 
-	add_triangle(&objm, 498.11217, 154.53818, -2.38847, 565.80329, 57.33352, 50.22591, 425.8098, 57.33352, 48.87036, &mat_trig1, 0);
-	add_triangle(&objm, 498.11217, 154.53818, -2.38847, 425.8098, 57.33352, 48.87036, 501.46356, 57.57082, -73.54529, &mat_trig1, 0);
-	add_triangle(&objm, 497.82237, -32.33669, -2.88491, 565.80329, 57.33352, 50.22591, 425.8098, 57.33352, 48.87036, &mat_trig1, 0);
-	add_triangle(&objm, 425.8098, 57.33352, 48.87036, 501.46356, 57.57082, -73.54529, 497.82237, -32.33669, -2.88491, &mat_trig1, 0);
-	add_triangle(&objm, 497.82237, -32.33669, -2.88491, 501.46356, 57.57082, -73.54529, 565.80329, 57.33352, 50.22591, &mat_trig1, 0);
-	add_triangle(&objm, 498.11217, 154.53818, -2.38847, 501.46356, 57.57082, -73.54529, 565.80329, 57.33352, 50.22591, &mat_trig1, 0);
+	// add_triangle(&objm, 498.11217, 154.53818, -2.38847, 565.80329, 57.33352, 50.22591, 425.8098, 57.33352, 48.87036, &mat_trig1, 0);
+	// add_triangle(&objm, 498.11217, 154.53818, -2.38847, 425.8098, 57.33352, 48.87036, 501.46356, 57.57082, -73.54529, &mat_trig1, 0);
+	// add_triangle(&objm, 497.82237, -32.33669, -2.88491, 565.80329, 57.33352, 50.22591, 425.8098, 57.33352, 48.87036, &mat_trig1, 0);
+	// add_triangle(&objm, 425.8098, 57.33352, 48.87036, 501.46356, 57.57082, -73.54529, 497.82237, -32.33669, -2.88491, &mat_trig1, 0);
+	// add_triangle(&objm, 497.82237, -32.33669, -2.88491, 501.46356, 57.57082, -73.54529, 565.80329, 57.33352, 50.22591, &mat_trig1, 0);
+	// add_triangle(&objm, 498.11217, 154.53818, -2.38847, 501.46356, 57.57082, -73.54529, 565.80329, 57.33352, 50.22591, &mat_trig1, 0);
 
 
 
@@ -106,7 +120,7 @@ int main(){
 	camera_object.distance_to_lense = 200;
 	camera_object.lense_width = 200;
 	camera_object.lense_height = 200;
-	camera_object.sub_ray_count = 2;
+	camera_object.sub_ray_count = 3;
 
 	// setiing up ray directon calculation neede values
 	vect3d thro_lense_iter_w;

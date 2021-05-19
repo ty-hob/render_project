@@ -6,9 +6,10 @@
 #define MAX_PLANE_OBJECTS 10
 #define MAX_TRIANGLE_OBJECTS 80
 #define MAX_LIGHT_OBJECTS 10
+#define MAX_MATERIALS 10
 
-#define MAX_REFLECTIONS 2
-#define MAX_REFRACTIONS 2
+#define MAX_REFLECTIONS 4
+#define MAX_REFRACTIONS 4
 
 #include <stdbool.h>
 #include "linalg.h"
@@ -92,6 +93,9 @@ typedef struct OBJECT_MANAGER{
 
 	light* light_objects;
 	int light_object_count;
+
+	material* materials;
+	int material_count;
 } object_manager;
 
 // return type of function get_coloset_object
@@ -122,6 +126,9 @@ extern vect3d reflect_ray(vect3d ray_direction, vect3d suface_normal);
 
 
 // adding objects to sceene code
+// adds materal to for use in objects
+extern void add_material(object_manager* objm, float dr, float dg, float db, int sc, float reflc, float refrc, float refri);
+
 // adds a sphere to sceene
 extern void add_sphere(object_manager* objm, float cx, float cy, float cz, float radius, material* mat);
 
