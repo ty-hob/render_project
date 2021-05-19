@@ -16,5 +16,7 @@ on specification a material is assigned an index in the oder of specification to
 
 light is specified like this:
 
+Markup : `code()`
+
 l [x] [y] [z]  [r] [g] [b]    [r] [g] [b]
               diffuse color  specular color
