@@ -7,6 +7,8 @@
 #include "sceene.h"
 
 
+
+
 rgb_color image_buffer[MAX_IMAGE_WIDTH*MAX_IMAGE_HEIGHT];
 
 int main(int argc, char* argv[]){
