@@ -20,4 +20,4 @@ $(objdir)/sceene.o : $(codedir)/sceene.c $(codedir)/sceene.h
 	gcc -o $(objdir)/sceene.o -c $(codedir)/sceene.c
 
 clean :
-	rm rendeng $(objdir)/main.o $(objdir)/linalg.o $(objdir)/imgexp.o $(objdir)/objs.o
+	rm rendeng $(objdir)/main.o $(objdir)/linalg.o $(objdir)/imgexp.o $(objdir)/objs.o $(codedir)/sceene.c
