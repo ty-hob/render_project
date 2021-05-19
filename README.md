@@ -6,7 +6,15 @@ project can be built with make.
 rendeng programm expects filepath to a sceene file.
 sceene files defines what the rendeng programm should render.
 
-scene files consist of objects and materials.
+scene files consist of materials, lights and objects.
 
 material can be specified like this:
-m [diffuse color] 
+
+m [r] [g] [b] [shine] [reflectivnes] [refractivnes] [refractive_index]
+on specification a material is assigned an index in the oder of specification to be used in object specifications
+
+
+light is specified like this:
+
+l [x] [y] [z]  [r] [g] [b]    [r] [g] [b]
+              diffuse color  specular color
