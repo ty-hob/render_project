@@ -1,23 +1,38 @@
-objdir = ./make_objects
-codedir = ./rendeng_code
+# Directories
+SRC_DIR = src
+BUILD_DIR = build
+BIN_DIR = bin
+INCLUDE_DIR = include
 
-rendeng : $(objdir)/main.o $(objdir)/linalg.o $(objdir)/imgexp.o $(objdir)/objs.o $(objdir)/sceene.o
-	gcc -o rendeng $(objdir)/main.o $(objdir)/linalg.o $(objdir)/imgexp.o $(objdir)/objs.o $(objdir)/sceene.o -lm
+# Compiler and flags
+CC = gcc
+# TODO: Reenable warnings (fixing them)
+# CFLAGS = -I$(INCLUDE_DIR) -Wall -Wextra -std=c11
+CFLAGS = -I$(INCLUDE_DIR)
+LDFLAGS = -lm
 
-$(objdir)/main.o : $(codedir)/main.c $(codedir)/linalg.c $(codedir)/linalg.h $(codedir)/imgexp.c $(codedir)/imgexp.h $(codedir)/objs.c $(codedir)/objs.h $(codedir)/sceene.c $(codedir)/sceene.h
-	gcc -o $(objdir)/main.o -c $(codedir)/main.c -lm
+# Source and object files
+SOURCES = $(wildcard $(SRC_DIR)/*.c)
+OBJECTS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SOURCES))
 
-$(objdir)/linalg.o : $(codedir)/linalg.c $(codedir)/linalg.h
-	gcc -o $(objdir)/linalg.o -c  $(codedir)/linalg.c
+# Target executable
+TARGET = $(BIN_DIR)/rendeng
 
-$(objdir)/imgexp.o : $(codedir)/imgexp.c $(codedir)/imgexp.h
-	gcc -o $(objdir)/imgexp.o -c $(codedir)/imgexp.c
+# Targets
+all: $(TARGET)
 
-$(objdir)/objs.o : $(codedir)/objs.c $(codedir)/objs.h
-	gcc -o $(objdir)/objs.o -c $(codedir)/objs.c
+# Link the executable
+$(TARGET): $(OBJECTS)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
 
-$(objdir)/sceene.o : $(codedir)/sceene.c $(codedir)/sceene.h
-	gcc -o $(objdir)/sceene.o -c $(codedir)/sceene.c
+# Compile objects
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-clean :
-	rm rendeng $(objdir)/main.o $(objdir)/linalg.o $(objdir)/imgexp.o $(objdir)/objs.o
+# Clean up build files
+clean:
+	rm -rf $(BUILD_DIR) $(BIN_DIR)
+
+.PHONY: all clean

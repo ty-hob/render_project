@@ -1,13 +1,10 @@
-#include "sceene.h"
 #include <stdio.h>
 
-
-
+#include "sceene.h"
 
 void load_sceene(char* file_name, object_manager* objm){
 	printf("loading sceene: %s\n", file_name);
 
-	
 
 	char* line;
 	size_t n;
@@ -24,7 +21,7 @@ void load_sceene(char* file_name, object_manager* objm){
 			float sr, sg, sb;
 
 			sscanf(line, "%c %f %f %f %f %f %f %f %f %f", &descirp_char, &x, &y, &z, &dr, &dg, &db, &sr, &sg, &sb);
-			
+
 			// printf("light\n");
 			// printf("%f %f %f\n", x, y, z);
 			// printf("%f %f %f\n", dr, dg, db);
