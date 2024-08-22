@@ -8,7 +8,7 @@ $(objdir)/main.o : $(codedir)/main.c $(codedir)/linalg.c $(codedir)/linalg.h $(c
 	gcc -o $(objdir)/main.o -c $(codedir)/main.c -lm
 
 $(objdir)/linalg.o : $(codedir)/linalg.c $(codedir)/linalg.h
-	gcc -o $(objdir)/linalg.o -c  $(codedir)/linalg.c 
+	gcc -o $(objdir)/linalg.o -c  $(codedir)/linalg.c
 
 $(objdir)/imgexp.o : $(codedir)/imgexp.c $(codedir)/imgexp.h
 	gcc -o $(objdir)/imgexp.o -c $(codedir)/imgexp.c
@@ -20,4 +20,4 @@ $(objdir)/sceene.o : $(codedir)/sceene.c $(codedir)/sceene.h
 	gcc -o $(objdir)/sceene.o -c $(codedir)/sceene.c
 
 clean :
-	rm rendeng $(objdir)/main.o $(objdir)/linalg.o $(objdir)/imgexp.o $(objdir)/objs.o $(codedir)/sceene.c
+	rm rendeng $(objdir)/main.o $(objdir)/linalg.o $(objdir)/imgexp.o $(objdir)/objs.o
