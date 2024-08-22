@@ -1,6 +1,6 @@
 /*
 	a model struct is a colecton of pointers to objects that make up an object
-	
+
 	model struct has a set of functions defined that can change the model in sceene
 	 - rotate
 	 - move in xyz

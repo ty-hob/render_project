@@ -1,0 +1,8 @@
+---
+BasedOnStyle: LLVM
+BinPackArguments: false
+BinPackParameters: false
+AlignAfterOpenBracket: BlockIndent
+MaxEmptyLinesToKeep: 1
+AlignOperands: true
+BreakBeforeBinaryOperators: All

@@ -1,0 +1,6 @@
+CompileFlags:
+  Add:
+    - -Wall
+    - -Wextra
+    - -Iinclude
+    - -std=c11

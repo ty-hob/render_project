@@ -1,0 +1,80 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "build/imgexp.o",
+      "src/imgexp.c"
+    ],
+    "directory": "/root/src/render_project",
+    "file": "/root/src/render_project/src/imgexp.c",
+    "output": "/root/src/render_project/build/imgexp.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "build/linalg.o",
+      "src/linalg.c"
+    ],
+    "directory": "/root/src/render_project",
+    "file": "/root/src/render_project/src/linalg.c",
+    "output": "/root/src/render_project/build/linalg.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "build/main.o",
+      "src/main.c"
+    ],
+    "directory": "/root/src/render_project",
+    "file": "/root/src/render_project/src/main.c",
+    "output": "/root/src/render_project/build/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "build/models.o",
+      "src/models.c"
+    ],
+    "directory": "/root/src/render_project",
+    "file": "/root/src/render_project/src/models.c",
+    "output": "/root/src/render_project/build/models.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "build/objs.o",
+      "src/objs.c"
+    ],
+    "directory": "/root/src/render_project",
+    "file": "/root/src/render_project/src/objs.c",
+    "output": "/root/src/render_project/build/objs.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/clang",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "build/sceene.o",
+      "src/sceene.c"
+    ],
+    "directory": "/root/src/render_project",
+    "file": "/root/src/render_project/src/sceene.c",
+    "output": "/root/src/render_project/build/sceene.o"
+  }
+]
