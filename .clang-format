@@ -6,3 +6,4 @@ AlignAfterOpenBracket: BlockIndent
 MaxEmptyLinesToKeep: 1
 AlignOperands: true
 BreakBeforeBinaryOperators: All
+PointerAlignment: Left

@@ -1,8 +1,9 @@
 #ifndef SCEENE
 #define SCEENE
 
+#include "error.h"
 #include "objs.h"
 
-extern void load_sceene(char *file_name, object_manager *objm);
+extern error* load_sceene(char* file_name, object_manager* objm);
 
 #endif

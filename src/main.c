@@ -1,14 +1,15 @@
+#include <stdbool.h>
+#include <stdio.h>
+
+#include "error.h"
 #include "imgexp.h"
 #include "linalg.h"
 #include "objs.h"
 #include "sceene.h"
 
-#include <stdbool.h>
-#include <stdio.h>
-
 rgb_color image_buffer[MAX_IMAGE_WIDTH * MAX_IMAGE_HEIGHT];
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   int image_width = 1000;
   int image_height = 1000;
 
@@ -59,10 +60,17 @@ int main(int argc, char *argv[]) {
   objm.materials = &materials[0];
   objm.material_count = 0;
 
-  if (argc == 2) {
-    load_sceene(argv[1], &objm);
-  } else {
+  if (argc != 2) {
     printf("invalid usage: rendeng [scene file name]\n");
+
+    return 0;
+  }
+
+  error* err = load_sceene(argv[1], &objm);
+  if (err != NULL) {
+    printf("error: %s\n", err->message);
+
+    free_error(err);
     return 0;
   }
 

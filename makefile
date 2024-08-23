@@ -6,9 +6,8 @@ INCLUDE_DIR = include
 
 # Compiler and flags
 CC = clang
-# TODO: Reenable warnings (fixing them)
-# CFLAGS = -I$(INCLUDE_DIR) -Wall -Wextra -std=c11
-CFLAGS = -I$(INCLUDE_DIR)
+CFLAGS = -I$(INCLUDE_DIR) -Wall -Wextra -std=c23
+# CFLAGS = -I$(INCLUDE_DIR)
 LDFLAGS = -lm
 
 # Source and object files

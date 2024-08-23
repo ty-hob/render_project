@@ -1,17 +1,68 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "sceene.h"
 
-void load_sceene(char *file_name, object_manager *objm) {
+// reads a line from a file. the caller is responsible for freeing the memory.
+// returns NULL if an error occured.
+char* read_line(FILE* file) {
+  char* line = calloc(256, sizeof(char));
+  if (line == NULL) {
+    return NULL;
+  }
+
+  size_t size = 255; // lower than allocated, to allow for null terminator
+  size_t lenght = 0;
+
+  while (1) {
+    int c = fgetc(file);
+    if (c == EOF) {
+      break;
+    }
+
+    line[lenght] = c;
+    lenght += 1;
+
+    if (c == '\n') {
+      break;
+    }
+
+    if (lenght >= size) {
+      size *= 2;
+      line = realloc(line, size);
+      if (line == NULL) {
+        return NULL;
+      }
+    }
+  }
+
+  line[lenght] = '\0';
+
+  return line;
+}
+
+error* load_sceene(char* file_name, object_manager* objm) {
   printf("loading sceene: %s\n", file_name);
 
-  char *line;
-  size_t n;
+  FILE* sceene_file = fopen(file_name, "r");
+  if (sceene_file == NULL) {
+    return new_error("could not open sceene file");
+  }
+
   char descirp_char;
 
-  FILE *sceene_file = fopen(file_name, "r");
+  while (1) {
+    char* line = read_line(sceene_file);
+    if (line == NULL) {
+      return new_error("failed to read line");
+    }
 
-  while (getline(&line, &n, sceene_file) != -1) {
+    if (strlen(line) == 0) {
+      free(line);
+      break;
+    }
+
     if (line[0] == 'l') { // add light
       float x, y, z;
       float dr, dg, db;
@@ -80,7 +131,11 @@ void load_sceene(char *file_name, object_manager *objm) {
 
       add_sphere(objm, cx, cy, cz, radius, &objm->materials[mat]);
     }
+
+    free(line);
   }
 
   fclose(sceene_file);
+
+  return NULL;
 }
