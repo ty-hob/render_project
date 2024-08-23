@@ -3,4 +3,4 @@ CompileFlags:
     - -Iinclude
     - -Wall
     - -Wextra
-    - -std=c23
+    - -std=c99
