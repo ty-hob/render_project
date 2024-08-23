@@ -131,7 +131,7 @@ int main(int argc, char* argv[]) {
   camera_object.lense_height = 200;
   camera_object.sub_ray_count = 3;
 
-  // setiing up ray directon calculation neede values
+  // setiing up ray directon calculation needed values
   vect3d thro_lense_iter_w;
   set(&thro_lense_iter_w, 0, camera_object.lense_width / image_width, 0);
   vect3d thro_lense_iter_h;
