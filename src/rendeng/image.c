@@ -30,6 +30,14 @@ color get_image_pixel(image* img, int x, int y) {
   return img->pixels[y * img->width + x];
 }
 
+color color_from_vector3(vector3 v) {
+  return (color){//
+                 .r = 255 * v.x,
+                 .g = 255 * v.y,
+                 .b = 255 * v.z
+  };
+}
+
 void save_image(image* img, const char* filename) {
   FILE* file = fopen(filename, "w");
   if (file == NULL) {

@@ -22,7 +22,7 @@ typedef struct CAMERA {
   float distance_to_lense;
   float lense_width;
   float lense_height;
-  int sub_ray_count;
+  int rays_per_pixel;
 } camera;
 
 typedef struct MATERIAL {
@@ -44,8 +44,8 @@ typedef struct SPHERE {
                                        // public
 } sphere;
 
-// struct containing information about a sceene object of type tirangle
-// the most basic poligon
+// struct containing information about a scene object of type triangle
+// the most basic polygon
 typedef struct TRIANGLE {
   vect3d p1;
   vect3d p2;

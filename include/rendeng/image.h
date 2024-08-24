@@ -1,8 +1,7 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-#define MAX_IMAGE_WIDTH 1000
-#define MAX_IMAGE_HEIGHT 1000
+#include "vector.h"
 
 typedef struct RGB_COLOR {
   float r;
@@ -36,6 +35,11 @@ extern void set_image_pixel(image* img, int x, int y, color c);
 
 // gets the pixel at the given x and y coordinates
 extern color get_image_pixel(image* img, int x, int y);
+
+// converts a vector3 to a color
+// the vector3 must have values between 0 and 1
+// x = r, y = g, z = b
+extern color color_from_vector3(vector3 v);
 
 // writes the given image to the given file in the PPM format
 extern void save_image(image* img, const char* filename);

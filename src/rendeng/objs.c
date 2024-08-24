@@ -108,7 +108,7 @@ rgb_color get_color_of_point(
     int reflection_count,
     int refraction_count
 ) {
-  rgb_color point_color;
+  rgb_color color;
   int i;
 
   float cos_theta, cos_alpha;
@@ -123,9 +123,9 @@ rgb_color get_color_of_point(
       = get_normal(intersection_point, cobj.c_object.object_pointer);
 
   // apply the ambient term
-  point_color.r = ambient_light.r * mat->diffuse_color.r;
-  point_color.g = ambient_light.g * mat->diffuse_color.g;
-  point_color.b = ambient_light.b * mat->diffuse_color.b;
+  color.r = ambient_light.r * mat->diffuse_color.r;
+  color.g = ambient_light.g * mat->diffuse_color.g;
+  color.b = ambient_light.b * mat->diffuse_color.b;
 
   // iterate over light sources
   vect3d to_light_direction;
@@ -139,12 +139,12 @@ rgb_color get_color_of_point(
 
     //       max(0, dot(n, r)) *      diffuse_color     *
     //       light_color_or_intensity
-    point_color.r += cos_theta * mat->diffuse_color.r
-                   * objm->light_objects[i].diffuse_light_color.r;
-    point_color.g += cos_theta * mat->diffuse_color.g
-                   * objm->light_objects[i].diffuse_light_color.g;
-    point_color.b += cos_theta * mat->diffuse_color.b
-                   * objm->light_objects[i].diffuse_light_color.b;
+    color.r += cos_theta * mat->diffuse_color.r
+             * objm->light_objects[i].diffuse_light_color.r;
+    color.g += cos_theta * mat->diffuse_color.g
+             * objm->light_objects[i].diffuse_light_color.g;
+    color.b += cos_theta * mat->diffuse_color.b
+             * objm->light_objects[i].diffuse_light_color.b;
 
     // add specular shading
     // normalized ray form intersection point to view point(camera)
@@ -164,12 +164,9 @@ rgb_color get_color_of_point(
     );
     //      pow(dot(light_reflection, to_view), shinines_cont) *
     //      specular_light_color * specular_reflection_const
-    point_color.r
-        += cos_alpha * objm->light_objects[i].specular_light_color.r * 1;
-    point_color.g
-        += cos_alpha * objm->light_objects[i].specular_light_color.g * 1;
-    point_color.b
-        += cos_alpha * objm->light_objects[i].specular_light_color.b * 1;
+    color.r += cos_alpha * objm->light_objects[i].specular_light_color.r * 1;
+    color.g += cos_alpha * objm->light_objects[i].specular_light_color.g * 1;
+    color.b += cos_alpha * objm->light_objects[i].specular_light_color.b * 1;
   }
 
   // apply reflection
@@ -195,10 +192,10 @@ rgb_color get_color_of_point(
             reflection_count + 1,
             0
         );
-        // aplly the color
-        point_color.r += reflection_color.r * mat->reflectivenes_const;
-        point_color.g += reflection_color.g * mat->reflectivenes_const;
-        point_color.b += reflection_color.b * mat->reflectivenes_const;
+        // apply the color
+        color.r += reflection_color.r * mat->reflectivenes_const;
+        color.g += reflection_color.g * mat->reflectivenes_const;
+        color.b += reflection_color.b * mat->reflectivenes_const;
       }
     }
   }
@@ -228,9 +225,9 @@ rgb_color get_color_of_point(
             refraction_count + 1
         );
 
-        point_color.r += refraction_color.r * mat->refractivenes_const;
-        point_color.g += refraction_color.g * mat->refractivenes_const;
-        point_color.b += refraction_color.b * mat->refractivenes_const;
+        color.r += refraction_color.r * mat->refractivenes_const;
+        color.g += refraction_color.g * mat->refractivenes_const;
+        color.b += refraction_color.b * mat->refractivenes_const;
       }
     }
   }
@@ -239,17 +236,17 @@ rgb_color get_color_of_point(
   int obscursions = trace_shadows(objm, cobj, intersection_point);
   // printf("%i \n", obscursions);
   for (i = 0; i < obscursions; i++) {
-    point_color.r *= .25;
-    point_color.g *= .25;
-    point_color.b *= .25;
+    color.r *= .25;
+    color.g *= .25;
+    color.b *= .25;
   }
 
   // normalizeing the color
-  point_color.r = minv(1, point_color.r);
-  point_color.g = minv(1, point_color.g);
-  point_color.b = minv(1, point_color.b);
+  color.r = minv(1, color.r);
+  color.g = minv(1, color.g);
+  color.b = minv(1, color.b);
 
-  return point_color;
+  return color;
 }
 
 // returns how many times a point on an object is in shadow of a light by other
