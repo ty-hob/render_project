@@ -8,7 +8,7 @@
 #include "rendeng/scene.h"
 #include "vector.h"
 
-rgb_color image_buffer[MAX_IMAGE_WIDTH * MAX_IMAGE_HEIGHT];
+// rgb_color image_buffer[MAX_IMAGE_WIDTH * MAX_IMAGE_HEIGHT];
 
 int main(int argc, char* argv[]) {
   int image_width  = 200;
@@ -24,6 +24,7 @@ int main(int argc, char* argv[]) {
     puts("chosen image height is larger than maximum allowed value");
     return 0;
   }
+
   // random use defined colors
   rgb_color background_color = {.5, .5, .5};
 
@@ -73,7 +74,14 @@ int main(int argc, char* argv[]) {
     printf("error: %s\n", err->message);
 
     free_error(err);
-    return 0;
+    return 1;
+  }
+
+  image* img = new_image(image_width, image_height);
+  if (img == NULL) {
+    puts("failed to create new image\n");
+
+    return 1;
   }
 
   // camera object containing information about the camera
@@ -213,20 +221,36 @@ int main(int argc, char* argv[]) {
         }
       }
 
-      image_buffer[height_image_index * image_width + width_image_index].r
-          = pixel_color_sum.r
-          / (camera_object.sub_ray_count * camera_object.sub_ray_count);
-      image_buffer[height_image_index * image_width + width_image_index].g
-          = pixel_color_sum.g
-          / (camera_object.sub_ray_count * camera_object.sub_ray_count);
-      image_buffer[height_image_index * image_width + width_image_index].b
-          = pixel_color_sum.b
-          / (camera_object.sub_ray_count * camera_object.sub_ray_count);
+      set_image_pixel(
+          img,
+          height_image_index,
+          width_image_index,
+          (color
+          ){//
+            .r = 255 * pixel_color_sum.r
+               / (camera_object.sub_ray_count * camera_object.sub_ray_count),
+            .g = 255 * pixel_color_sum.g
+               / (camera_object.sub_ray_count * camera_object.sub_ray_count),
+            .b = 255 * pixel_color_sum.b
+               / (camera_object.sub_ray_count * camera_object.sub_ray_count)
+          }
+      );
+
+      // image_buffer[height_image_index * image_width + width_image_index].r
+      //     = pixel_color_sum.r
+      //     / (camera_object.sub_ray_count * camera_object.sub_ray_count);
+      // image_buffer[height_image_index * image_width + width_image_index].g
+      //     = pixel_color_sum.g
+      //     / (camera_object.sub_ray_count * camera_object.sub_ray_count);
+      // image_buffer[height_image_index * image_width + width_image_index].b
+      //     = pixel_color_sum.b
+      //     / (camera_object.sub_ray_count * camera_object.sub_ray_count);
     }
   }
 
-  // write image buffer to ppm file named: render_result.ppm
-  save_image(image_width, image_height, image_buffer);
+  save_image(img, "render_result.ppm");
+
+  free_image(img);
 
   return 0;
 }
