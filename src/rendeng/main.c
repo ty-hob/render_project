@@ -229,9 +229,9 @@ int main(int argc, char* argv[]) {
           width_image_index,
           height_image_index,
           (color){//
-                  .r = pixel_color_sum.r * 255 / total_sub_rays,
-                  .g = pixel_color_sum.g * 255 / total_sub_rays,
-                  .b = pixel_color_sum.b * 255 / total_sub_rays
+                  .r = 255 * pixel_color_sum.r / total_sub_rays,
+                  .g = 255 * pixel_color_sum.g / total_sub_rays,
+                  .b = 255 * pixel_color_sum.b / total_sub_rays
           }
       );
     }

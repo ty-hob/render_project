@@ -12,9 +12,9 @@ typedef struct RGB_COLOR {
 
 // RGB color
 typedef struct COLOR {
-  char r;
-  char g;
-  char b;
+  unsigned char r;
+  unsigned char g;
+  unsigned char b;
 } color;
 
 // a 2d array of pixels with a given width and height
@@ -39,12 +39,5 @@ extern color get_image_pixel(image* img, int x, int y);
 
 // writes the given image to the given file in the PPM format
 extern void save_image(image* img, const char* filename);
-
-// // if rgb color gets out of bounds [0, 1] then find the highest chanel
-// // and divide every chanel with it
-// extern rgb_color normalize_color(rgb_color a);
-//
-// // simple average between color valuse a and b. change later :)
-// extern rgb_color merge_colors(rgb_color a, rgb_color b);
 
 #endif
