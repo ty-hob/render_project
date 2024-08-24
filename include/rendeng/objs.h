@@ -26,10 +26,10 @@ typedef struct CAMERA {
 } camera;
 
 typedef struct MATERIAL {
-  rgb_color diffuse_color;
+  vector3 diffuse_color;
   int shininess_const;
-  float reflectivenes_const;
-  float refractivenes_const;
+  float reflectiveness_const;
+  float refractiveness_const;
   float refractive_index;
 } material;
 
@@ -67,13 +67,13 @@ typedef struct PLANE {
 // struct containing information about light object
 typedef struct LIGHT {
   vect3d pos;
-  rgb_color diffuse_light_color;
-  rgb_color specular_light_color;
+  vector3 diffuse_light_color;
+  vector3 specular_light_color;
 } light;
 
 // struct for dealing with different object types
-// created for use in the future when i add poligons
-// and maby someting else idn.
+// created for use in the future when i add polygons
+// and maybe someting else idk.
 typedef struct OBJECT {
   char type;
   void* object_pointer;
@@ -113,7 +113,7 @@ typedef struct CLOSEST_OBJECT {
 // requested pointer of an objects parameter.
 extern void* get_object_parameter(char pram_type, object obj);
 
-// function for finding the closes object given all the objects in sceene and
+// function for finding the closes object given all the objects in scene and
 // ray star pos and direction
 extern closest_object get_closest_object(
     object_manager* objm, vect3d start_pos, vect3d ray_direction
@@ -121,13 +121,13 @@ extern closest_object get_closest_object(
 
 // given a point in scene and a object that that point is on calculate the
 // shadeing of that given point.
-extern rgb_color get_color_of_point(
+vector3 get_color_of_point(
     vect3d ray_direction,
     vect3d intersection_point,
     closest_object cobj,
     object_manager* objm,
     camera* camera_object,
-    rgb_color ambient_light,
+    vector3 ambient_light_color,
     int reflection_count,
     int refraction_count
 );

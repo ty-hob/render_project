@@ -105,25 +105,23 @@ int main(int argc, char* argv[]) {
 
   if (camera_object.rays_per_pixel > 1) {
     sub_ray_iter_horizontal = scale3(
-        lense_iter_horizontal, 1.0 / (double)camera_object.rays_per_pixel
+        1.0 / (double)camera_object.rays_per_pixel, lense_iter_horizontal
     );
     sub_ray_iter_vertical = scale3(
-        lense_iter_vertical, 1.0 / (double)camera_object.rays_per_pixel
+        1.0 / (double)camera_object.rays_per_pixel, lense_iter_vertical
     );
   }
 
   // calculate ambient light
-  rgb_color ambient_light = {0, 0, 0};
+  vector3 ambient_light_color = {0, 0, 0};
 
   for (int i = 0; i < obj_manager.light_object_count; i++) {
-    ambient_light.r += obj_manager.light_objects[i].diffuse_light_color.r;
-    ambient_light.g += obj_manager.light_objects[i].diffuse_light_color.g;
-    ambient_light.b += obj_manager.light_objects[i].diffuse_light_color.b;
+    ambient_light_color = add3(
+        ambient_light_color, obj_manager.light_objects[i].diffuse_light_color
+    );
   }
 
-  ambient_light.r *= 0.25;
-  ambient_light.g *= 0.25;
-  ambient_light.b *= 0.25;
+  ambient_light_color = scale3(0.25, ambient_light_color);
 
   for (int pixel_pos_y = 0; pixel_pos_y < image_height; pixel_pos_y++) {
     for (int pixel_pos_x = 0; pixel_pos_x < image_width; pixel_pos_x++) {
@@ -135,8 +133,8 @@ int main(int argc, char* argv[]) {
       vector3 lense_point = add3(
           lense_iter_start_pos,
           add3(
-              scale3(lense_iter_horizontal, (double)pixel_pos_x),
-              scale3(lense_iter_vertical, (double)pixel_pos_y)
+              scale3((double)pixel_pos_x, lense_iter_horizontal),
+              scale3((double)pixel_pos_y, lense_iter_vertical)
           )
       );
 
@@ -152,8 +150,8 @@ int main(int argc, char* argv[]) {
               add3(
                   lense_point,
                   add3(
-                      scale3(sub_ray_iter_horizontal, ray_x),
-                      scale3(sub_ray_iter_vertical, ray_y)
+                      scale3(ray_x, sub_ray_iter_horizontal),
+                      scale3(ray_y, sub_ray_iter_vertical)
                   )
               ),
               camera_object.camera_pos
@@ -173,20 +171,19 @@ int main(int argc, char* argv[]) {
             continue;
           }
 
-          rgb_color point_color = get_color_of_point(
-              from_vector3(ray_direction),
-              from_vector3(scale3(ray_direction, closest_obj.distance)),
-              closest_obj,
-              &obj_manager,
-              &camera_object,
-              ambient_light,
-              0,
-              0
+          pixel_color = add3(
+              pixel_color,
+              get_color_of_point(
+                  from_vector3(ray_direction),
+                  from_vector3(scale3(closest_obj.distance, ray_direction)),
+                  closest_obj,
+                  &obj_manager,
+                  &camera_object,
+                  ambient_light_color,
+                  0,
+                  0
+              )
           );
-
-          pixel_color.x += point_color.r;
-          pixel_color.y += point_color.g;
-          pixel_color.z += point_color.b;
         }
       }
 
@@ -194,7 +191,7 @@ int main(int argc, char* argv[]) {
           img,
           pixel_pos_x,
           pixel_pos_y,
-          color_from_vector3(scale3(pixel_color, 1.0 / total_rays_per_pixel))
+          color_from_vector3(scale3(1.0 / total_rays_per_pixel, pixel_color))
       );
     }
   }

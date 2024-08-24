@@ -3,12 +3,6 @@
 
 #include "vector.h"
 
-typedef struct RGB_COLOR {
-  float r;
-  float g;
-  float b;
-} rgb_color;
-
 // RGB color
 typedef struct COLOR {
   unsigned char r;

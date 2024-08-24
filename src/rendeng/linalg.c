@@ -68,14 +68,14 @@ float vector_length(vect3d a) {
   );
 }
 
-// claculates a 3d unit vector given 3d vect a and 3d vect b. the direction is a
+// calculates a 3d unit vector given 3d vect a and 3d vect b. the direction is a
 // to b.
 vect3d make_unit_vect(vect3d a, vect3d b) {
   return scale(sub(b, a), 1.0 / vector_length(sub(b, a)));
   ;
 }
 
-// normalize a given vector to unit lenght
+// normalize a given vector to unit length
 vect3d normalize(vect3d a) {
   float sq = sqrt(
       (a.values[0] * a.values[0]) + (a.values[1] * a.values[1])

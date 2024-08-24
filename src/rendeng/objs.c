@@ -1,5 +1,6 @@
 #include "rendeng/objs.h"
 #include "rendeng/linalg.h"
+#include "vector.h"
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -98,21 +99,16 @@ closest_object get_closest_object(
 
 // given a point in scene and a object that that point is on calculate the
 // shadeing of that given point.
-rgb_color get_color_of_point(
+vector3 get_color_of_point(
     vect3d ray_direction,
     vect3d intersection_point,
     closest_object cobj,
     object_manager* objm,
     camera* camera_object,
-    rgb_color ambient_light,
+    vector3 ambient_light_color,
     int reflection_count,
     int refraction_count
 ) {
-  rgb_color color;
-  int i;
-
-  float cos_theta, cos_alpha;
-
   // get the material of the object
   material* mat = get_object_parameter('m', cobj.c_object);
 
@@ -123,36 +119,34 @@ rgb_color get_color_of_point(
       = get_normal(intersection_point, cobj.c_object.object_pointer);
 
   // apply the ambient term
-  color.r = ambient_light.r * mat->diffuse_color.r;
-  color.g = ambient_light.g * mat->diffuse_color.g;
-  color.b = ambient_light.b * mat->diffuse_color.b;
+  vector3 color = hadamard3(ambient_light_color, mat->diffuse_color);
 
   // iterate over light sources
   vect3d to_light_direction;
-  for (i = 0; i < objm->light_object_count; i++) {
+  for (int i = 0; i < objm->light_object_count; i++) {
     // normal form suface to light source
     to_light_direction
         = make_unit_vect(intersection_point, objm->light_objects[i].pos);
 
     // add diffuse shadeing
-    cos_theta = maxv(0, dot(to_light_direction, suface_normal));
-
-    //       max(0, dot(n, r)) *      diffuse_color     *
-    //       light_color_or_intensity
-    color.r += cos_theta * mat->diffuse_color.r
-             * objm->light_objects[i].diffuse_light_color.r;
-    color.g += cos_theta * mat->diffuse_color.g
-             * objm->light_objects[i].diffuse_light_color.g;
-    color.b += cos_theta * mat->diffuse_color.b
-             * objm->light_objects[i].diffuse_light_color.b;
+    // max(0, dot(n, r)) * diffuse_color * light_color_or_intensity
+    color = add3(
+        color,
+        scale3(
+            // cos_theta
+            maxv(0, dot(to_light_direction, suface_normal)),
+            hadamard3(
+                mat->diffuse_color, objm->light_objects[i].diffuse_light_color
+            )
+        )
+    );
 
     // add specular shading
     // normalized ray form intersection point to view point(camera)
     // normalize(sub(camera_object.camera_pos, intersection_point));
     // normalized reflection of light ray
     // scale(reflect_ray(to_light_direction, suface_normal), -1);
-
-    cos_alpha = pow(
+    double cos_alpha = pow(
         maxv(
             0,
             dot(make_unit_vect(
@@ -162,16 +156,18 @@ rgb_color get_color_of_point(
         ),
         mat->shininess_const
     );
-    //      pow(dot(light_reflection, to_view), shinines_cont) *
-    //      specular_light_color * specular_reflection_const
-    color.r += cos_alpha * objm->light_objects[i].specular_light_color.r * 1;
-    color.g += cos_alpha * objm->light_objects[i].specular_light_color.g * 1;
-    color.b += cos_alpha * objm->light_objects[i].specular_light_color.b * 1;
+
+    // pow(dot(light_reflection, to_view), shinines_cont) *
+    // specular_light_color * specular_reflection_const
+    // specular_reflection_const = 1 here
+    color = add3(
+        color, scale3(cos_alpha, objm->light_objects[i].specular_light_color)
+    );
   }
 
   // apply reflection
   if (reflection_count < MAX_REFLECTIONS) {
-    if (mat->reflectivenes_const > 0) {
+    if (mat->reflectiveness_const > 0) {
       // get the reflection ray
       ray_direction = reflect_ray(ray_direction, suface_normal);
 
@@ -181,28 +177,28 @@ rgb_color get_color_of_point(
       // check if an object was hit by traced ray
       if (reflect_cobj.distance != -1) {
         // get the color of that point
-        rgb_color reflection_color = get_color_of_point(
+        vector3 reflection_color = get_color_of_point(
             ray_direction,
             add(intersection_point,
                 scale(ray_direction, reflect_cobj.distance)),
             reflect_cobj,
             objm,
             camera_object,
-            ambient_light,
+            ambient_light_color,
             reflection_count + 1,
             0
         );
+
         // apply the color
-        color.r += reflection_color.r * mat->reflectivenes_const;
-        color.g += reflection_color.g * mat->reflectivenes_const;
-        color.b += reflection_color.b * mat->reflectivenes_const;
+        color
+            = add3(color, scale3(mat->reflectiveness_const, reflection_color));
       }
     }
   }
 
   // apply refraction
   if (refraction_count < MAX_REFRACTIONS) {
-    if (mat->refractivenes_const > 0) {
+    if (mat->refractiveness_const > 0) {
       // get rfractive ray
       ray_direction = refract_ray(cobj, ray_direction, &intersection_point);
 
@@ -213,38 +209,40 @@ rgb_color get_color_of_point(
       );
 
       if (refract_cobj.distance != -1) {
-        rgb_color refraction_color = get_color_of_point(
+        vector3 refraction_color = get_color_of_point(
             ray_direction,
             add(intersection_point,
                 scale(ray_direction, refract_cobj.distance + .1)),
             refract_cobj,
             objm,
             camera_object,
-            ambient_light,
+            ambient_light_color,
             0,
             refraction_count + 1
         );
 
-        color.r += refraction_color.r * mat->refractivenes_const;
-        color.g += refraction_color.g * mat->refractivenes_const;
-        color.b += refraction_color.b * mat->refractivenes_const;
+        color
+            = add3(color, scale3(mat->refractiveness_const, refraction_color));
       }
     }
   }
 
   // apply shadows to shadeing
   int obscursions = trace_shadows(objm, cobj, intersection_point);
-  // printf("%i \n", obscursions);
-  for (i = 0; i < obscursions; i++) {
-    color.r *= .25;
-    color.g *= .25;
-    color.b *= .25;
+  if (obscursions > 0) {
+    color = scale3(1.0 / (4.0 * (double)obscursions), color);
   }
 
   // normalizeing the color
-  color.r = minv(1, color.r);
-  color.g = minv(1, color.g);
-  color.b = minv(1, color.b);
+  if (color.x > 1) {
+    color.x = 1;
+  }
+  if (color.y > 1) {
+    color.y = 1;
+  }
+  if (color.z > 1) {
+    color.z = 1;
+  }
 
   return color;
 }
@@ -342,7 +340,7 @@ vect3d refract_ray(
       cosI  = -dot(suface_normal, ray_direction);
       sinT2 = n * n * (1.0 - (cosI * cosI));
       if (sinT2 > 1) {
-        puts("invalid refraction indecies\n");
+        puts("invalid refraction indeces\n");
       }
       cosT = sqrt(1.0 - sinT2);
 
@@ -503,13 +501,13 @@ void add_material(
     printf("max material count reached\n");
     return;
   }
-  objm->materials[objm->material_count].diffuse_color.r     = dr;
-  objm->materials[objm->material_count].diffuse_color.g     = dg;
-  objm->materials[objm->material_count].diffuse_color.b     = db;
-  objm->materials[objm->material_count].shininess_const     = sc;
-  objm->materials[objm->material_count].reflectivenes_const = reflc;
-  objm->materials[objm->material_count].refractivenes_const = refrc;
-  objm->materials[objm->material_count].refractive_index    = refri;
+  objm->materials[objm->material_count].diffuse_color.x      = dr;
+  objm->materials[objm->material_count].diffuse_color.y      = dg;
+  objm->materials[objm->material_count].diffuse_color.z      = db;
+  objm->materials[objm->material_count].shininess_const      = sc;
+  objm->materials[objm->material_count].reflectiveness_const = reflc;
+  objm->materials[objm->material_count].refractiveness_const = refrc;
+  objm->materials[objm->material_count].refractive_index     = refri;
 
   objm->material_count += 1;
 }
@@ -594,7 +592,7 @@ void add_triangle(
   objm->scene_object_count += 1;
 }
 
-// adds plane to sceene. nx, ny, nz are surface normal values. when setting
+// adds plane to scene. nx, ny, nz are surface normal values. when setting
 // surface normal it can be set with a length larger or smaller than 1. the
 // suface normal is normalized on initalisation
 void add_plane(
@@ -608,7 +606,7 @@ void add_plane(
     material* mat
 ) {
   if (objm->plane_object_count >= MAX_PLANE_OBJECTS) {
-    puts("max plane object count in sceene exeded\n");
+    puts("max plane object count in scene exeded\n");
     return;
   }
   objm->plane_objects[objm->plane_object_count].point.values[0] = px;
@@ -633,7 +631,7 @@ void add_plane(
   objm->scene_object_count += 1;
 }
 
-// adds a light object to sceene
+// adds a light object to scene
 void add_light(
     object_manager* objm,
     float px,
@@ -647,7 +645,7 @@ void add_light(
     float sb
 ) {
   if (objm->light_object_count >= MAX_LIGHT_OBJECTS) {
-    puts("max light object count in sceene exeeded\n");
+    puts("max light object count in scene exeded\n");
     return;
   }
 
@@ -655,13 +653,13 @@ void add_light(
   objm->light_objects[objm->light_object_count].pos.values[1] = py;
   objm->light_objects[objm->light_object_count].pos.values[2] = pz;
 
-  objm->light_objects[objm->light_object_count].diffuse_light_color.r = dr;
-  objm->light_objects[objm->light_object_count].diffuse_light_color.g = dg;
-  objm->light_objects[objm->light_object_count].diffuse_light_color.b = db;
+  objm->light_objects[objm->light_object_count].diffuse_light_color.x = dr;
+  objm->light_objects[objm->light_object_count].diffuse_light_color.y = dg;
+  objm->light_objects[objm->light_object_count].diffuse_light_color.z = db;
 
-  objm->light_objects[objm->light_object_count].specular_light_color.r = sr;
-  objm->light_objects[objm->light_object_count].specular_light_color.g = sg;
-  objm->light_objects[objm->light_object_count].specular_light_color.b = sb;
+  objm->light_objects[objm->light_object_count].specular_light_color.x = sr;
+  objm->light_objects[objm->light_object_count].specular_light_color.y = sg;
+  objm->light_objects[objm->light_object_count].specular_light_color.z = sb;
 
   objm->light_object_count += 1;
 }
