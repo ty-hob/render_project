@@ -30,39 +30,39 @@ color get_image_pixel(image* img, int x, int y) {
   return img->pixels[y * img->width + x];
 }
 
-rgb_color normalize_color(rgb_color a) {
-  if (a.r > a.g) {
-    if (a.r > a.b) {
-      a.r /= a.r;
-      a.g /= a.r;
-      a.b /= a.r;
-    } else {
-      a.r /= a.b;
-      a.g /= a.b;
-      a.b /= a.b;
-    }
-  } else {
-    if (a.g > a.b) {
-      a.r /= a.g;
-      a.g /= a.g;
-      a.b /= a.g;
-    } else {
-      a.r /= a.b;
-      a.g /= a.b;
-      a.b /= a.b;
-    }
-  }
-
-  return a;
-}
-
-rgb_color merge_colors(rgb_color a, rgb_color b) {
-  a.r = (a.r + b.r) / 2;
-  a.g = (a.g + b.g) / 2;
-  a.b = (a.b + b.b) / 2;
-
-  return a;
-}
+// rgb_color normalize_color(rgb_color a) {
+//   if (a.r > a.g) {
+//     if (a.r > a.b) {
+//       a.r /= a.r;
+//       a.g /= a.r;
+//       a.b /= a.r;
+//     } else {
+//       a.r /= a.b;
+//       a.g /= a.b;
+//       a.b /= a.b;
+//     }
+//   } else {
+//     if (a.g > a.b) {
+//       a.r /= a.g;
+//       a.g /= a.g;
+//       a.b /= a.g;
+//     } else {
+//       a.r /= a.b;
+//       a.g /= a.b;
+//       a.b /= a.b;
+//     }
+//   }
+//
+//   return a;
+// }
+//
+// rgb_color merge_colors(rgb_color a, rgb_color b) {
+//   a.r = (a.r + b.r) / 2;
+//   a.g = (a.g + b.g) / 2;
+//   a.b = (a.b + b.b) / 2;
+//
+//   return a;
+// }
 
 // writes the data from struct RGB_COLOR buffer to a image file
 // render_result.ppm
