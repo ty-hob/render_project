@@ -12,11 +12,11 @@
 
 #include <stdbool.h>
 
-#include "rendeng/imgexp.h"
+#include "rendeng/image.h"
 #include "rendeng/linalg.h"
 #include "vector.h"
 
-// struct containing information about the cammera
+// struct containing information about the camera
 typedef struct CAMERA {
   vector3 camera_pos;
   float distance_to_lense;
@@ -82,8 +82,8 @@ typedef struct OBJECT {
 // struct containing pointers to object type buffers like sphere[] and
 // triangle[] and light[]
 typedef struct OBJECT_MANAGER {
-  object* sceene_objects;
-  int sceene_object_count;
+  object* scene_objects;
+  int scene_object_count;
 
   sphere* sphere_objects;
   int sphere_object_count;
@@ -102,7 +102,7 @@ typedef struct OBJECT_MANAGER {
 } object_manager;
 
 // return type of function get_coloset_object
-// contains the distnace and a pointer to and object
+// contains the distance and a pointer to and object
 typedef struct CLOSEST_OBJECT {
   float distance;
   object c_object; // no good name for this shit // sphere for no later struct -
@@ -119,7 +119,7 @@ extern closest_object get_closest_object(
     object_manager* objm, vect3d start_pos, vect3d ray_direction
 );
 
-// given a point in sceena and a object that that point is on calculate the
+// given a point in scene and a object that that point is on calculate the
 // shadeing of that given point.
 extern rgb_color get_color_of_point(
     vect3d ray_direction,

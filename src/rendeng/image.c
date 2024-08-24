@@ -1,4 +1,4 @@
-#include "rendeng/imgexp.h"
+#include "rendeng/image.h"
 #include <stdio.h>
 
 rgb_color normalize_color(rgb_color a) {

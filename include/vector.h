@@ -15,10 +15,10 @@ typedef struct VECTOR3 {
 } vector3;
 
 // // 2d vector with values x=0, y=0
-// extern const vector2 null2 = {0, 0};
-//
+extern const vector2 null2;
+
 // // 3d vector with values x=0, y=0, z=0
-// extern const vector3 null3 = {0, 0, 0};
+extern const vector3 null3;
 
 vector2 scale2(vector2 v, double s);
 

@@ -1,5 +1,5 @@
-#ifndef IMGEXP
-#define IMGEXP
+#ifndef IMAGE_H
+#define IMAGE_H
 
 #define MAX_IMAGE_WIDTH 1000
 #define MAX_IMAGE_HEIGHT 1000

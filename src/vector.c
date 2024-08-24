@@ -1,6 +1,10 @@
 #include "vector.h"
 #include <math.h>
 
+const vector2 null2 = {0, 0};
+
+const vector3 null3 = {0, 0, 0};
+
 vector2 scale2(vector2 v, double s) {
   return (vector2){//
                    .x = v.x * s,

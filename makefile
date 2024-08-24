@@ -49,6 +49,6 @@ $(BUILD_DIR)/%.o: %.c
 
 # Clean up build and binary directories
 clean:
-	rm -rf $(BUILD_DIR) $(BIN_DIR)
+	rm -rf $(BUILD_DIR) $(BIN_DIR) render_result.ppm
 
 .PHONY: all clean

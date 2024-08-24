@@ -60,14 +60,14 @@ closest_object get_closest_object(
   float (*check_intersection)(vect3d, vect3d, void*);
 
   // if any object exist set the intersection wiht the first one as the closest
-  if (objm->sceene_object_count != 0) {
+  if (objm->scene_object_count != 0) {
 
-    check_intersection = get_object_parameter('i', objm->sceene_objects[0]);
+    check_intersection = get_object_parameter('i', objm->scene_objects[0]);
     cobj.distance      = check_intersection(
-        ray_direction, start_pos, objm->sceene_objects[0].object_pointer
+        ray_direction, start_pos, objm->scene_objects[0].object_pointer
     );
-    cobj.c_object.type           = objm->sceene_objects[0].type;
-    cobj.c_object.object_pointer = objm->sceene_objects[0].object_pointer;
+    cobj.c_object.type           = objm->scene_objects[0].type;
+    cobj.c_object.object_pointer = objm->scene_objects[0].object_pointer;
 
   } else {
     cobj.distance = -1;
@@ -75,28 +75,28 @@ closest_object get_closest_object(
   // if more than one objects exists find the closest one by checking them all
   // and updating the closes obj value if a closer object is found to the
   // starting point
-  for (int i = 1; i < objm->sceene_object_count; i++) {
-    check_intersection = get_object_parameter('i', objm->sceene_objects[i]);
+  for (int i = 1; i < objm->scene_object_count; i++) {
+    check_intersection = get_object_parameter('i', objm->scene_objects[i]);
     distance_to_object = check_intersection(
-        ray_direction, start_pos, objm->sceene_objects[i].object_pointer
+        ray_direction, start_pos, objm->scene_objects[i].object_pointer
     );
 
     if (distance_to_object != -1) {
       if (cobj.distance == -1) {
         cobj.distance                = distance_to_object;
-        cobj.c_object.type           = objm->sceene_objects[i].type;
-        cobj.c_object.object_pointer = objm->sceene_objects[i].object_pointer;
+        cobj.c_object.type           = objm->scene_objects[i].type;
+        cobj.c_object.object_pointer = objm->scene_objects[i].object_pointer;
       } else if (distance_to_object < cobj.distance) {
         cobj.distance                = distance_to_object;
-        cobj.c_object.type           = objm->sceene_objects[i].type;
-        cobj.c_object.object_pointer = objm->sceene_objects[i].object_pointer;
+        cobj.c_object.type           = objm->scene_objects[i].type;
+        cobj.c_object.object_pointer = objm->scene_objects[i].object_pointer;
       }
     }
   }
   return cobj;
 }
 
-// given a point in sceena and a object that that point is on calculate the
+// given a point in scene and a object that that point is on calculate the
 // shadeing of that given point.
 rgb_color get_color_of_point(
     vect3d ray_direction,
@@ -134,7 +134,7 @@ rgb_color get_color_of_point(
     to_light_direction
         = make_unit_vect(intersection_point, objm->light_objects[i].pos);
 
-    // addd diffuse shadeing
+    // add diffuse shadeing
     cos_theta = maxv(0, dot(to_light_direction, suface_normal));
 
     //       max(0, dot(n, r)) *      diffuse_color     *
@@ -273,14 +273,14 @@ int trace_shadows(
     // find distance to closest object that is not cobj
     distance_to_closest_objscursion = -1;
     // iterate over objects
-    for (int i = 0; i < objm->sceene_object_count; i++) {
+    for (int i = 0; i < objm->scene_object_count; i++) {
       if (cobj.c_object.object_pointer
-          != objm->sceene_objects[i].object_pointer) {
-        check_intersection = get_object_parameter('i', objm->sceene_objects[i]);
+          != objm->scene_objects[i].object_pointer) {
+        check_intersection = get_object_parameter('i', objm->scene_objects[i]);
         distance_to_object = check_intersection(
             ray_direction,
             intersection_point,
-            objm->sceene_objects[i].object_pointer
+            objm->scene_objects[i].object_pointer
         );
 
         if (distance_to_object != -1) {
@@ -517,7 +517,7 @@ void add_material(
   objm->material_count += 1;
 }
 
-// adds a sphere to sceene
+// adds a sphere to scene
 void add_sphere(
     object_manager* objm,
     float cx,
@@ -527,7 +527,7 @@ void add_sphere(
     material* mat
 ) {
   if (objm->sphere_object_count >= MAX_SPHERE_OBJECTS) {
-    puts("max sphere object count in sceene exeeded\n");
+    puts("max sphere object count in scene exeded\n");
     return;
   }
   objm->sphere_objects[objm->sphere_object_count].center.values[0] = cx;
@@ -539,15 +539,15 @@ void add_sphere(
       = &sphere_intersection;
   objm->sphere_objects[objm->sphere_object_count].get_normal = &sphere_normal;
 
-  objm->sceene_objects[objm->sceene_object_count].type = 's';
-  objm->sceene_objects[objm->sceene_object_count].object_pointer
+  objm->scene_objects[objm->scene_object_count].type = 's';
+  objm->scene_objects[objm->scene_object_count].object_pointer
       = &objm->sphere_objects[objm->sphere_object_count];
 
   objm->sphere_object_count += 1;
-  objm->sceene_object_count += 1;
+  objm->scene_object_count += 1;
 }
 
-// adds triangle object to sceene withs coners in points p1, p2, p3. with a
+// adds triangle object to scene with coners in points p1, p2, p3. with a
 // given pointer to a meterial struct
 void add_triangle(
     object_manager* objm,
@@ -564,7 +564,7 @@ void add_triangle(
     bool invert_normal
 ) {
   if (objm->triangle_object_count >= MAX_TRIANGLE_OBJECTS) {
-    puts("max triangle object count in sceene exeeded\n");
+    puts("max triangle object count in scene exeded\n");
     return;
   }
   objm->triangle_objects[objm->triangle_object_count].p1.values[0] = p1x;
@@ -589,17 +589,17 @@ void add_triangle(
   objm->triangle_objects[objm->triangle_object_count].get_normal
       = &triangle_normal;
 
-  objm->sceene_objects[objm->sceene_object_count].type = 't';
-  objm->sceene_objects[objm->sceene_object_count].object_pointer
+  objm->scene_objects[objm->scene_object_count].type = 't';
+  objm->scene_objects[objm->scene_object_count].object_pointer
       = &objm->triangle_objects[objm->triangle_object_count];
 
   objm->triangle_object_count += 1;
-  objm->sceene_object_count += 1;
+  objm->scene_object_count += 1;
 }
 
 // adds plane to sceene. nx, ny, nz are surface normal values. when setting
 // surface normal it can be set with a length larger or smaller than 1. the
-// suface normal is normalized on initalization
+// suface normal is normalized on initalisation
 void add_plane(
     object_manager* objm,
     float px,
@@ -611,7 +611,7 @@ void add_plane(
     material* mat
 ) {
   if (objm->plane_object_count >= MAX_PLANE_OBJECTS) {
-    puts("max plane object count in sceene exeeded\n");
+    puts("max plane object count in sceene exeded\n");
     return;
   }
   objm->plane_objects[objm->plane_object_count].point.values[0] = px;
@@ -628,12 +628,12 @@ void add_plane(
   normal                                               = normalize(normal);
   objm->plane_objects[objm->plane_object_count].normal = normal;
 
-  objm->sceene_objects[objm->sceene_object_count].type = 'p';
-  objm->sceene_objects[objm->sceene_object_count].object_pointer
+  objm->scene_objects[objm->scene_object_count].type = 'p';
+  objm->scene_objects[objm->scene_object_count].object_pointer
       = &objm->plane_objects[objm->plane_object_count];
 
   objm->plane_object_count += 1;
-  objm->sceene_object_count += 1;
+  objm->scene_object_count += 1;
 }
 
 // adds a light object to sceene
