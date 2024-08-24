@@ -5,12 +5,13 @@
 #include "rendeng/imgexp.h"
 #include "rendeng/linalg.h"
 #include "rendeng/objs.h"
-#include "rendeng/sceene.h"
+#include "rendeng/scene.h"
+#include "vector.h"
 
 rgb_color image_buffer[MAX_IMAGE_WIDTH * MAX_IMAGE_HEIGHT];
 
 int main(int argc, char* argv[]) {
-  int image_width = 200;
+  int image_width  = 200;
   int image_height = 200;
 
   // error check if the image size is not to big
@@ -18,6 +19,7 @@ int main(int argc, char* argv[]) {
     puts("chosen image width is larger than maximum allowed value");
     return 0;
   }
+
   if (image_height > MAX_IMAGE_HEIGHT) {
     puts("chosen image height is larger than maximum allowed value");
     return 0;
@@ -42,22 +44,22 @@ int main(int argc, char* argv[]) {
 
   // object manager setup
   object_manager objm;
-  objm.sceene_objects = &sceene_objects[0];
+  objm.sceene_objects      = &sceene_objects[0];
   objm.sceene_object_count = 0;
 
-  objm.sphere_objects = &sphere_objects[0];
+  objm.sphere_objects      = &sphere_objects[0];
   objm.sphere_object_count = 0;
 
-  objm.plane_objects = &plane_objects[0];
+  objm.plane_objects      = &plane_objects[0];
   objm.plane_object_count = 0;
 
-  objm.triangle_objects = &triangle_objects[0];
+  objm.triangle_objects      = &triangle_objects[0];
   objm.triangle_object_count = 0;
 
-  objm.light_objects = &light_objects[0];
+  objm.light_objects      = &light_objects[0];
   objm.light_object_count = 0;
 
-  objm.materials = &materials[0];
+  objm.materials      = &materials[0];
   objm.material_count = 0;
 
   if (argc != 2) {
@@ -66,7 +68,7 @@ int main(int argc, char* argv[]) {
     return 0;
   }
 
-  error* err = load_sceene(argv[1], &objm);
+  error* err = load_scene(argv[1], &objm);
   if (err != NULL) {
     printf("error: %s\n", err->message);
 
@@ -74,83 +76,70 @@ int main(int argc, char* argv[]) {
     return 0;
   }
 
-  // add_material(&objm, 1, 0, 0, 100, 0, 0, 5);
-
-  // material mat_plane1 = {{ 0,  0,  1}, 100,  0, 0, 5};
-  // material mat_plane2 = {{ 0,  1, .5}, 100, .1, 0, 1};
-  // material mat_plane3 = {{.8, .8,  0}, 100,  0, 0, 1};
-
-  // material mat_ball1 =  {{ 1,  0,  0}, 100,   0, 1, 3};
-  // material mat_ball2 =  {{ 0.1,  0.1,  0.1}, 300,   0.5, 0.5, 3};
-  // material mat_ball3 =  {{.1, .1, .3}, 100,  .6, 0, 1};
-  // material mat_ball4 =  {{.4, .7, .7}, 100,  .6, 0, 1};
-
-  // material mat_trig1 =  {{.0,  .5, .0}, 10,  0, 0, 0};
-
-  // add_light(&objm, -200, 0, 0, 1, 1, 1, 1, 1, 1);
-  // add_light(&objm, -200, 500, 1900, 1, 1, 1, 1, 1, 1);
-  //  add_light(&objm, 3000, 500, 1000, 1, 1, 1, 0, 0, 1);
-  // add_light(&objm, 200, -1000, 1000);
-  // add_triangle(&objm, 400, -50, 0, 400, 50, 0, 400, 0, 50, &mat_trig1,
-  // false);
-
-  // add_sphere(&objm,  900,  100,   -100, 100, &mat_ball1); // red
-  //  add_sphere(&objm,  400,  0, -100,  50, &mat_ball2); // green
-  //  add_sphere(&objm,  600,  150,  150, 100, &mat_ball3); // dark blue
-  //  add_sphere(&objm, 1000, -200,    0, 200, &mat_ball4); // light blue
-  //  add_sphere(&objm, 1200, 300,    0, 200, &mat_ball4);
-
-  // add_sphere(&objm,  -210,  0,   0, 200, &mat_ball1);
-
-  // add_plane(&objm, 0, 0, -500, 0, 0, 1, &objm.materials[0]);
-  // add_plane(&objm, 4000, 0, 0, -1, 0, 0, &mat_plane2);
-  // add_plane(&objm, 0, 0, 2200, 0, 0, -1, &mat_plane3);
-
-  // add_triangle(&objm, 498.11217, 154.53818, -2.38847,
-  // 565.80329, 57.33352, 50.22591, 425.8098, 57.33352, 48.87036, &mat_trig1,
-  // 0); add_triangle(&objm, 498.11217, 154.53818, -2.38847,
-  // 425.8098, 57.33352, 48.87036, 501.46356, 57.57082, -73.54529, &mat_trig1,
-  // 0); add_triangle(&objm, 497.82237, -32.33669, -2.88491,
-  // 565.80329, 57.33352, 50.22591, 425.8098, 57.33352, 48.87036, &mat_trig1,
-  // 0); add_triangle(&objm, 425.8098, 57.33352, 48.87036, 501.46356, 57.57082,
-  // -73.54529, 497.82237, -32.33669, -2.88491, &mat_trig1, 0);
-  // add_triangle(&objm, 497.82237, -32.33669, -2.88491, 501.46356, 57.57082,
-  // -73.54529, 565.80329, 57.33352, 50.22591, &mat_trig1, 0);
-  // add_triangle(&objm, 498.11217, 154.53818, -2.38847, 501.46356, 57.57082,
-  // -73.54529, 565.80329, 57.33352, 50.22591, &mat_trig1, 0);
-
-  // x depth
-  // y horizontal
-  // z vertical
-
   // camera object containing information about the camera
-  camera camera_object;
-  set(&camera_object.camera_pos, 0, 0, 0);
-  camera_object.distance_to_lense = 200;
-  camera_object.lense_width = 200;
-  camera_object.lense_height = 200;
-  camera_object.sub_ray_count = 3;
+  camera camera_object = {//
+                          .camera_pos        = {0, 0, 0},
+                          .distance_to_lense = 200,
+                          .lense_width       = 200,
+                          .lense_height      = 200,
+                          .sub_ray_count     = 3
+  };
+  // set(&camera_object.camera_pos, 0, 0, 0);
+  // camera_object.distance_to_lense = 200;
+  // camera_object.lense_width       = 200;
+  // camera_object.lense_height      = 200;
+  // camera_object.sub_ray_count     = 3;
 
-  // setiing up ray directon calculation needed values
-  vect3d thro_lense_iter_w;
-  set(&thro_lense_iter_w, 0, camera_object.lense_width / image_width, 0);
-  vect3d thro_lense_iter_h;
-  set(&thro_lense_iter_h, 0, 0, -camera_object.lense_height / image_height);
+  // setting up ray direction calculation needed values
+  vector3 lense_iter_horizontal = {//
+                                   .x = 0,
+                                   .y = camera_object.lense_width / image_width,
+                                   .z = 0
+  };
 
-  vect3d thro_lense_iter_start_pos;
-  set(&thro_lense_iter_start_pos,
-      camera_object.camera_pos.values[0] + camera_object.distance_to_lense,
-      camera_object.camera_pos.values[1] - (camera_object.lense_width / 2),
-      camera_object.camera_pos.values[2] + (camera_object.lense_height / 2));
+  vector3 lense_iter_vertical = {//
+                                 .x = 0,
+                                 .y = 0,
+                                 .z = -camera_object.lense_height / image_height
+  };
 
-  vect3d sub_ray_iter_w, sub_ray_iter_h;
-  fill(&sub_ray_iter_w, 0);
-  fill(&sub_ray_iter_h, 0);
+  vector3 lense_iter_start_pos
+      = {.x = camera_object.camera_pos.x + camera_object.distance_to_lense,
+         .y = camera_object.camera_pos.y - (camera_object.lense_width / 2),
+         .z = camera_object.camera_pos.z + (camera_object.lense_height / 2)};
+
+  // vect3d thro_lense_iter_w;
+  // set(&thro_lense_iter_w, 0, camera_object.lense_width / image_width, 0);
+  // vect3d thro_lense_iter_h;
+  // set(&thro_lense_iter_h, 0, 0, -camera_object.lense_height / image_height);
+  //
+  // vect3d thro_lense_iter_start_pos;
+  // set(&thro_lense_iter_start_pos,
+  //     camera_object.camera_pos.values[0] + camera_object.distance_to_lense,
+  //     camera_object.camera_pos.values[1] - (camera_object.lense_width / 2),
+  //     camera_object.camera_pos.values[2] + (camera_object.lense_height / 2));
+
+  vector3 sub_ray_iter_horizontal = {0, 0, 0};
+  vector3 sub_ray_iter_vertical   = {0, 0, 0};
+
+  // vect3d sub_ray_iter_w, sub_ray_iter_h;
+  // fill(&sub_ray_iter_w, 0);
+  // fill(&sub_ray_iter_h, 0);
+
   if (camera_object.sub_ray_count > 1) {
-    sub_ray_iter_w
-        = scale(thro_lense_iter_w, 1.0 / ((float)camera_object.sub_ray_count));
-    sub_ray_iter_h
-        = scale(thro_lense_iter_h, 1.0 / ((float)camera_object.sub_ray_count));
+    // sub_ray_iter_w
+    //     = scale(thro_lense_iter_w, 1.0 /
+    //     ((float)camera_object.sub_ray_count));
+    // sub_ray_iter_h
+    //     = scale(thro_lense_iter_h, 1.0 /
+    //     ((float)camera_object.sub_ray_count));
+
+    sub_ray_iter_horizontal = scale3(
+        lense_iter_horizontal, 1.0 / ((double)camera_object.sub_ray_count)
+    );
+    sub_ray_iter_vertical = scale3(
+        lense_iter_vertical, 1.0 / ((double)camera_object.sub_ray_count)
+    );
   }
 
   // random use variable used for loops
@@ -172,8 +161,6 @@ int main(int argc, char* argv[]) {
   ambient_light.g *= 0.25;
   ambient_light.b *= 0.25;
 
-  // untit vect calculate for every image pixel, contains the directon of ray
-  vect3d ray_direction;
   vect3d intersection_point;
 
   closest_object cobj;
@@ -181,8 +168,6 @@ int main(int argc, char* argv[]) {
 
   // buffer of struct RGB_COLOR containing the data of render images pixels
 
-  // iterative point on lense
-  vect3d lense_point;
   for (int height_image_index = 0; height_image_index < image_height;
        height_image_index++) {
     for (int width_image_index = 0; width_image_index < image_width;
@@ -194,38 +179,63 @@ int main(int argc, char* argv[]) {
       pixel_color_sum.b = 0;
 
       // point on lense for calculateing main rays
-      lense_point = add(
-          thro_lense_iter_start_pos,
-          add(scale(thro_lense_iter_w, width_image_index),
-              scale(thro_lense_iter_h, height_image_index))
+      vector3 lense_point = add3(
+          lense_iter_start_pos,
+          add3(
+              scale3(lense_iter_horizontal, (double)width_image_index),
+              scale3(lense_iter_vertical, (double)height_image_index)
+          )
       );
 
+      // lense_point = add(
+      //     thro_lense_iter_start_pos,
+      //     add(scale(thro_lense_iter_w, width_image_index),
+      //         scale(thro_lense_iter_h, height_image_index))
+      // );
+      //
       for (int sub_ray_h_index = 0;
            sub_ray_h_index < camera_object.sub_ray_count;
            sub_ray_h_index++) {
         for (int sub_ray_w_index = 0;
              sub_ray_w_index < camera_object.sub_ray_count;
              sub_ray_w_index++) {
-
           // calculate ray direction
-          ray_direction = make_unit_vect(
-              camera_object.camera_pos,
-              add(lense_point,
-                  add(scale(sub_ray_iter_w, sub_ray_w_index),
-                      scale(sub_ray_iter_h, sub_ray_h_index)))
-          );
+          //
+          // unit vector calculate for every image pixel, contains the direction
+          // of ray
+          vector3 ray_direction = unit3(sub3(
+              add3(
+                  lense_point,
+                  add3(
+                      scale3(sub_ray_iter_horizontal, sub_ray_w_index),
+                      scale3(sub_ray_iter_vertical, sub_ray_h_index)
+                  )
+              ),
+              camera_object.camera_pos
+          ));
+
+          //  = make_unit_vect(
+          //     camera_object.camera_pos,
+          //     add(lense_point,
+          //         add(scale(sub_ray_iter_w, sub_ray_w_index),
+          //             scale(sub_ray_iter_h, sub_ray_h_index)))
+          // );
+
           // find distance to closes object if it exists
           cobj = get_closest_object(
-              &objm, camera_object.camera_pos, ray_direction
+              &objm,
+              from_vector3(camera_object.camera_pos),
+              from_vector3(ray_direction)
           );
 
           // set current color
           if (cobj.distance != -1) {
 
-            intersection_point = scale(ray_direction, cobj.distance);
+            intersection_point
+                = scale(from_vector3(ray_direction), cobj.distance);
 
             point_color = get_color_of_point(
-                ray_direction,
+                from_vector3(ray_direction),
                 intersection_point,
                 cobj,
                 &objm,
@@ -242,11 +252,11 @@ int main(int argc, char* argv[]) {
           } else {
             // set pixle to background color and continue to next pixel
             pixel_color_sum.r = background_color.r * camera_object.sub_ray_count
-                                * camera_object.sub_ray_count;
+                              * camera_object.sub_ray_count;
             pixel_color_sum.g = background_color.g * camera_object.sub_ray_count
-                                * camera_object.sub_ray_count;
+                              * camera_object.sub_ray_count;
             pixel_color_sum.b = background_color.b * camera_object.sub_ray_count
-                                * camera_object.sub_ray_count;
+                              * camera_object.sub_ray_count;
             sub_ray_h_index = camera_object.sub_ray_count;
             sub_ray_w_index = camera_object.sub_ray_count;
           }
@@ -255,13 +265,13 @@ int main(int argc, char* argv[]) {
 
       image_buffer[height_image_index * image_width + width_image_index].r
           = pixel_color_sum.r
-            / (camera_object.sub_ray_count * camera_object.sub_ray_count);
+          / (camera_object.sub_ray_count * camera_object.sub_ray_count);
       image_buffer[height_image_index * image_width + width_image_index].g
           = pixel_color_sum.g
-            / (camera_object.sub_ray_count * camera_object.sub_ray_count);
+          / (camera_object.sub_ray_count * camera_object.sub_ray_count);
       image_buffer[height_image_index * image_width + width_image_index].b
           = pixel_color_sum.b
-            / (camera_object.sub_ray_count * camera_object.sub_ray_count);
+          / (camera_object.sub_ray_count * camera_object.sub_ray_count);
     }
   }
 

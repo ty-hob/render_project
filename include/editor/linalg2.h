@@ -1,31 +1,23 @@
 #ifndef LINALG2
 #define LINALG2
 
-
-
-
-
 // second version of linalg lib
 // now with doubles not floats
 // rendeng should migrate to this lib latter
 
-
 // MATH STRUCTS
 // 3d point / vect data
-typedef struct VECT3D{
-	double v1; // x
-	double v2; // y
-	double v3; // z
+typedef struct VECT3D {
+  double v1; // x
+  double v2; // y
+  double v3; // z
 } vect3d;
 
 // 2d point / vect data
-typedef struct VECT2D{
-	double v1; // horizontal
-	double v2; // vertical
+typedef struct VECT2D {
+  double v1; // horizontal
+  double v2; // vertical
 } vect2d;
-
-
-
 
 // VARIABLES
 // vect2d with values 0, 0 for use in calculations. (dont change)

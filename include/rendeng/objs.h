@@ -14,10 +14,11 @@
 
 #include "rendeng/imgexp.h"
 #include "rendeng/linalg.h"
+#include "vector.h"
 
 // struct containing information about the cammera
 typedef struct CAMERA {
-  vect3d camera_pos;
+  vector3 camera_pos;
   float distance_to_lense;
   float lense_width;
   float lense_height;

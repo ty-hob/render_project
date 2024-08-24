@@ -63,10 +63,10 @@ closest_object get_closest_object(
   if (objm->sceene_object_count != 0) {
 
     check_intersection = get_object_parameter('i', objm->sceene_objects[0]);
-    cobj.distance = check_intersection(
+    cobj.distance      = check_intersection(
         ray_direction, start_pos, objm->sceene_objects[0].object_pointer
     );
-    cobj.c_object.type = objm->sceene_objects[0].type;
+    cobj.c_object.type           = objm->sceene_objects[0].type;
     cobj.c_object.object_pointer = objm->sceene_objects[0].object_pointer;
 
   } else {
@@ -83,12 +83,12 @@ closest_object get_closest_object(
 
     if (distance_to_object != -1) {
       if (cobj.distance == -1) {
-        cobj.distance = distance_to_object;
-        cobj.c_object.type = objm->sceene_objects[i].type;
+        cobj.distance                = distance_to_object;
+        cobj.c_object.type           = objm->sceene_objects[i].type;
         cobj.c_object.object_pointer = objm->sceene_objects[i].object_pointer;
       } else if (distance_to_object < cobj.distance) {
-        cobj.distance = distance_to_object;
-        cobj.c_object.type = objm->sceene_objects[i].type;
+        cobj.distance                = distance_to_object;
+        cobj.c_object.type           = objm->sceene_objects[i].type;
         cobj.c_object.object_pointer = objm->sceene_objects[i].object_pointer;
       }
     }
@@ -140,11 +140,11 @@ rgb_color get_color_of_point(
     //       max(0, dot(n, r)) *      diffuse_color     *
     //       light_color_or_intensity
     point_color.r += cos_theta * mat->diffuse_color.r
-                     * objm->light_objects[i].diffuse_light_color.r;
+                   * objm->light_objects[i].diffuse_light_color.r;
     point_color.g += cos_theta * mat->diffuse_color.g
-                     * objm->light_objects[i].diffuse_light_color.g;
+                   * objm->light_objects[i].diffuse_light_color.g;
     point_color.b += cos_theta * mat->diffuse_color.b
-                     * objm->light_objects[i].diffuse_light_color.b;
+                   * objm->light_objects[i].diffuse_light_color.b;
 
     // add specular shading
     // normalized ray form intersection point to view point(camera)
@@ -155,7 +155,9 @@ rgb_color get_color_of_point(
     cos_alpha = pow(
         maxv(
             0,
-            dot(make_unit_vect(intersection_point, camera_object->camera_pos),
+            dot(make_unit_vect(
+                    intersection_point, from_vector3(camera_object->camera_pos)
+                ),
                 scale(reflect_ray(to_light_direction, suface_normal), -1))
         ),
         mat->shininess_const
@@ -314,8 +316,8 @@ vect3d refract_ray(
   // get material of cobj
   material* mat = get_object_parameter('m', cobj.c_object);
 
-  float n = 1 / mat->refractive_index;
-  float cosI = -dot(suface_normal, ray_direction);
+  float n     = 1 / mat->refractive_index;
+  float cosI  = -dot(suface_normal, ray_direction);
   float sinT2 = n * n * (1.0 - (cosI * cosI));
   if (sinT2 > 1) {
     puts("invalid refraction indecies\n");
@@ -339,8 +341,8 @@ vect3d refract_ray(
       suface_normal
           = get_normal(*intersection_point, cobj.c_object.object_pointer);
 
-      n = mat->refractive_index;
-      cosI = -dot(suface_normal, ray_direction);
+      n     = mat->refractive_index;
+      cosI  = -dot(suface_normal, ray_direction);
       sinT2 = n * n * (1.0 - (cosI * cosI));
       if (sinT2 > 1) {
         puts("invalid refraction indecies\n");
@@ -378,7 +380,7 @@ float sphere_intersection(
   sphere* self = (sphere*)obj_prt;
   // sqrt
   vect3d temp_sub = sub(start_pos, self->center);
-  float t = dot(ray_direction, temp_sub);
+  float t         = dot(ray_direction, temp_sub);
 
   float d = t * t - (dot(temp_sub, temp_sub) - (self->radius * self->radius));
   if (d >= 0) {
@@ -444,7 +446,7 @@ float plane_intersection(
     vect3d ray_direction, vect3d start_pos, void* obj_prt
 ) {
   plane* self = (plane*)obj_prt;
-  float div = dot(ray_direction, self->normal);
+  float div   = dot(ray_direction, self->normal);
   if (div != 0) {
     div = dot(sub(self->point, start_pos), self->normal) / div;
     if (div <= 0) {
@@ -462,7 +464,7 @@ float plane_intersection(
 // claculates the surface normal (unit vect) for an given sphere object and
 // point of intersection.
 vect3d sphere_normal(vect3d intersection_point, void* obj_prt) {
-  sphere* self = (sphere*)obj_prt;
+  sphere* self       = (sphere*)obj_prt;
   intersection_point = make_unit_vect(self->center, intersection_point);
   return intersection_point;
 }
@@ -504,13 +506,13 @@ void add_material(
     printf("max material count reached\n");
     return;
   }
-  objm->materials[objm->material_count].diffuse_color.r = dr;
-  objm->materials[objm->material_count].diffuse_color.g = dg;
-  objm->materials[objm->material_count].diffuse_color.b = db;
-  objm->materials[objm->material_count].shininess_const = sc;
+  objm->materials[objm->material_count].diffuse_color.r     = dr;
+  objm->materials[objm->material_count].diffuse_color.g     = dg;
+  objm->materials[objm->material_count].diffuse_color.b     = db;
+  objm->materials[objm->material_count].shininess_const     = sc;
   objm->materials[objm->material_count].reflectivenes_const = reflc;
   objm->materials[objm->material_count].refractivenes_const = refrc;
-  objm->materials[objm->material_count].refractive_index = refri;
+  objm->materials[objm->material_count].refractive_index    = refri;
 
   objm->material_count += 1;
 }
@@ -531,8 +533,8 @@ void add_sphere(
   objm->sphere_objects[objm->sphere_object_count].center.values[0] = cx;
   objm->sphere_objects[objm->sphere_object_count].center.values[1] = cy;
   objm->sphere_objects[objm->sphere_object_count].center.values[2] = cz;
-  objm->sphere_objects[objm->sphere_object_count].radius = radius;
-  objm->sphere_objects[objm->sphere_object_count].mat = mat;
+  objm->sphere_objects[objm->sphere_object_count].radius           = radius;
+  objm->sphere_objects[objm->sphere_object_count].mat              = mat;
   objm->sphere_objects[objm->sphere_object_count].check_intersection
       = &sphere_intersection;
   objm->sphere_objects[objm->sphere_object_count].get_normal = &sphere_normal;
@@ -615,15 +617,15 @@ void add_plane(
   objm->plane_objects[objm->plane_object_count].point.values[0] = px;
   objm->plane_objects[objm->plane_object_count].point.values[1] = py;
   objm->plane_objects[objm->plane_object_count].point.values[2] = pz;
-  objm->plane_objects[objm->plane_object_count].mat = mat;
+  objm->plane_objects[objm->plane_object_count].mat             = mat;
   objm->plane_objects[objm->plane_object_count].check_intersection
       = &plane_intersection;
   objm->plane_objects[objm->plane_object_count].get_normal = &plane_normal;
   vect3d normal;
-  normal.values[0] = nx;
-  normal.values[1] = ny;
-  normal.values[2] = nz;
-  normal = normalize(normal);
+  normal.values[0]                                     = nx;
+  normal.values[1]                                     = ny;
+  normal.values[2]                                     = nz;
+  normal                                               = normalize(normal);
   objm->plane_objects[objm->plane_object_count].normal = normal;
 
   objm->sceene_objects[objm->sceene_object_count].type = 'p';

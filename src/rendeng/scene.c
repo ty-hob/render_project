@@ -2,18 +2,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "rendeng/sceene.h"
+#include "rendeng/scene.h"
 
 // reads a line from a file. the caller is responsible for freeing the memory.
-// returns NULL if an error occured.
+// returns NULL if an error occurred.
 char* read_line(FILE* file) {
   char* line = calloc(256, sizeof(char));
   if (line == NULL) {
     return NULL;
   }
 
-  size_t size = 255; // lower than allocated, to allow for null terminator
-  size_t lenght = 0;
+  size_t size   = 255; // lower than allocated, to allow for null terminator
+  size_t length = 0;
 
   while (1) {
     int c = fgetc(file);
@@ -21,14 +21,14 @@ char* read_line(FILE* file) {
       break;
     }
 
-    line[lenght] = c;
-    lenght += 1;
+    line[length] = c;
+    length += 1;
 
     if (c == '\n') {
       break;
     }
 
-    if (lenght >= size) {
+    if (length >= size) {
       size *= 2;
       line = realloc(line, size);
       if (line == NULL) {
@@ -37,23 +37,23 @@ char* read_line(FILE* file) {
     }
   }
 
-  line[lenght] = '\0';
+  line[length] = '\0';
 
   return line;
 }
 
-error* load_sceene(char* file_name, object_manager* objm) {
-  printf("loading sceene: %s\n", file_name);
+error* load_scene(char* filename, object_manager* objm) {
+  printf("loading scene: %s\n", filename);
 
-  FILE* sceene_file = fopen(file_name, "r");
-  if (sceene_file == NULL) {
-    return new_error("could not open sceene file");
+  FILE* file = fopen(filename, "r");
+  if (file == NULL) {
+    return new_error("could not open scene file");
   }
 
-  char descirp_char;
+  char object_type;
 
   while (1) {
-    char* line = read_line(sceene_file);
+    char* line = read_line(file);
     if (line == NULL) {
       return new_error("failed to read line");
     }
@@ -71,7 +71,7 @@ error* load_sceene(char* file_name, object_manager* objm) {
       sscanf(
           line,
           "%c %f %f %f %f %f %f %f %f %f",
-          &descirp_char,
+          &object_type,
           &x,
           &y,
           &z,
@@ -80,8 +80,7 @@ error* load_sceene(char* file_name, object_manager* objm) {
           &db,
           &sr,
           &sg,
-          &sb
-      );
+          &sb);
 
       add_light(objm, x, y, z, dr, dg, db, sr, sg, sb);
     } else if (line[0] == 'm') { // add material
@@ -92,15 +91,14 @@ error* load_sceene(char* file_name, object_manager* objm) {
       sscanf(
           line,
           "%c %f %f %f %d %f %f %f",
-          &descirp_char,
+          &object_type,
           &dr,
           &dg,
           &db,
           &sc,
           &reflc,
           &refrc,
-          &refri
-      );
+          &refri);
 
       add_material(objm, dr, dg, db, sc, reflc, refrc, refri);
     } else if (line[0] == 'p') { // add plane
@@ -110,15 +108,14 @@ error* load_sceene(char* file_name, object_manager* objm) {
       sscanf(
           line,
           "%c %f %f %f %f %f %f %d",
-          &descirp_char,
+          &object_type,
           &px,
           &py,
           &pz,
           &nx,
           &ny,
           &nz,
-          &mat
-      );
+          &mat);
 
       add_plane(objm, px, py, pz, nx, ny, nz, &objm->materials[mat]);
     } else if (line[0] == 's') { // add sphere
@@ -126,8 +123,14 @@ error* load_sceene(char* file_name, object_manager* objm) {
       int mat;
 
       sscanf(
-          line, "%c %f %f %f %f %d", &descirp_char, &cx, &cy, &cz, &radius, &mat
-      );
+          line,
+          "%c %f %f %f %f %d",
+          &object_type,
+          &cx,
+          &cy,
+          &cz,
+          &radius,
+          &mat);
 
       add_sphere(objm, cx, cy, cz, radius, &objm->materials[mat]);
     }
@@ -135,7 +138,7 @@ error* load_sceene(char* file_name, object_manager* objm) {
     free(line);
   }
 
-  fclose(sceene_file);
+  fclose(file);
 
   return NULL;
 }

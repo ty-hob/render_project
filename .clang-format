@@ -4,6 +4,7 @@ BinPackArguments: false
 BinPackParameters: false
 AlignAfterOpenBracket: BlockIndent
 MaxEmptyLinesToKeep: 1
-AlignOperands: true
+AlignOperands: AlignAfterOperator
 BreakBeforeBinaryOperators: All
 PointerAlignment: Left
+AlignConsecutiveAssignments: true

@@ -1,6 +1,8 @@
 #ifndef LINALG
 #define LINALG
 
+#include "vector.h"
+
 // 3d vect data type
 typedef struct VECT3D {
   float values[3];
@@ -15,10 +17,10 @@ typedef struct QUADRATIC_ROOTS {
 } quadratic_roots;
 
 // sets 3d vects values to v1, v2, v3
-extern void set(vect3d *a, float v1, float v2, float v3);
+extern void set(vect3d* a, float v1, float v2, float v3);
 
 // fills 3d vects values with v
-extern void fill(vect3d *a, float v);
+extern void fill(vect3d* a, float v);
 
 // prints a ginven 3d vector
 extern void printv(vect3d a);
@@ -53,5 +55,7 @@ extern float maxv(float a, float b);
 
 // returns the smalles value of a and b
 extern float minv(float a, float b);
+
+extern vect3d from_vector3(vector3 v);
 
 #endif

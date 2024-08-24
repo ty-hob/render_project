@@ -48,7 +48,7 @@ vect3d scale(vect3d a, float s) {
 // calculates the dot product value for 3d vectors a and b
 float dot(vect3d a, vect3d b) {
   return (a.values[0] * b.values[0]) + (a.values[1] * b.values[1])
-         + (a.values[2] * b.values[2]);
+       + (a.values[2] * b.values[2]);
 }
 
 // calculates the ros porduct of vectors a and b (a x b)
@@ -103,4 +103,12 @@ float minv(float a, float b) {
   } else {
     return b;
   }
+}
+
+vect3d from_vector3(vector3 v) {
+  vect3d a;
+  a.values[0] = v.x;
+  a.values[1] = v.y;
+  a.values[2] = v.z;
+  return a;
 }
