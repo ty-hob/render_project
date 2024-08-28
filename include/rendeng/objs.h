@@ -14,15 +14,23 @@
 #include "vector.h"
 
 // struct containing information about the camera
-typedef struct CAMERA {
-  vector3 camera_pos;
-  float distance_to_lense;
-  float lense_width;
-  float lense_height;
+typedef struct CAMERA_OBJECT {
+  vector3 focus;
+  vector3 lense_center;
+
+  // vector3 camera_pos;
+  // float distance_to_lense;
+
+  double lense_width;
+  double lense_height;
+  // the amount of pixels per unit of lense width/height
+  double lense_pixel_density;
+
   int rays_per_pixel;
+
   int reflection_depth;
   int refraction_depth;
-} camera;
+} camera_object;
 
 typedef struct MATERIAL {
   vector3 diffuse_color;
@@ -108,6 +116,31 @@ typedef struct CLOSEST_OBJECT {
                    // object pointer
 } closest_object;
 
+color trace(camera_object* camera, vector3 ray_direction);
+
+// returns the top left corner of the lense.
+vector3 get_lense_top_left_corner(const camera_object* camera);
+
+// returns a unit vector horizontal to the lense square plane
+// pointing from left to right
+vector3 get_lense_horizontal_unit(const camera_object* camera);
+
+// returns a unit vector vertical to the lense square plane
+// pointing from top to bottom
+vector3 get_lense_vertical_unit(const camera_object* camera);
+
+// returns the iterator vector that passes through the lense square plane
+// horizontally
+// for single ray
+// pointing from left to right
+vector3 get_lense_horizontal_iter(const camera_object* camera);
+
+// returns the iterator vector that passes through the lense square plane
+// vertically
+// for single ray
+// pointing from left to right
+vector3 get_lense_vertical_iter(const camera_object* camera);
+
 // does the parsing of object types sphere, triangle, plane and returns the
 // requested pointer of an objects parameter.
 extern void* get_object_parameter(char pram_type, object obj);
@@ -125,7 +158,7 @@ vector3 get_color_of_point(
     vect3d intersection_point,
     closest_object cobj,
     object_manager* objm,
-    camera* camera_object,
+    camera_object* camera_object,
     vector3 ambient_light_color,
     int reflection_count,
     int refraction_count
@@ -145,8 +178,8 @@ extern vect3d refract_ray(
 // reflect a given ray against a suface normal
 extern vect3d reflect_ray(vect3d ray_direction, vect3d suface_normal);
 
-// adding objects to sceene code
-// adds materal to for use in objects
+// adding objects to scene code
+// adds material to for use in objects
 extern void add_material(
     object_manager* objm,
     float dr,
@@ -158,7 +191,7 @@ extern void add_material(
     float refri
 );
 
-// adds a sphere to sceene
+// adds a sphere to scene
 extern void add_sphere(
     object_manager* objm,
     float cx,
@@ -168,7 +201,7 @@ extern void add_sphere(
     material* mat
 );
 
-// adds triangle object to sceene withs coners in points p1, p2, p3. with a
+// adds triangle object to scene with coners in points p1, p2, p3. with a
 // given pointer to a meterial struct
 extern void add_triangle(
     object_manager* objm,
@@ -185,9 +218,9 @@ extern void add_triangle(
     bool invert_normal
 );
 
-// adds plane to sceene. nx, ny, nz are surface normal values. when setting
+// adds plane to scene. nx, ny, nz are surface normal values. when setting
 // surface normal it can be set with a length larger or smaller than 1. the
-// suface normal is normalized on initalization
+// suface normal is normalized on initalisation
 extern void add_plane(
     object_manager* objm,
     float px,

@@ -5,6 +5,40 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+vector3 get_lense_top_left_corner(const camera_object* camera) {
+  return add3(
+      add3(
+          camera->lense_center,
+          scale3(-camera->lense_height / 2, get_lense_vertical_unit(camera))
+      ),
+      scale3(-camera->lense_width / 2, get_lense_horizontal_unit(camera))
+  );
+}
+
+vector3 get_lense_horizontal_unit(const camera_object* camera) {
+  return scale3(
+      -1, unit3(cross(sub3(camera->lense_center, camera->focus), k_hat3))
+  );
+}
+
+vector3 get_lense_vertical_unit(const camera_object* camera) {
+  return scale3(
+      -1, unit3(cross(sub3(camera->lense_center, camera->focus), j_hat3))
+  );
+}
+
+vector3 get_lense_horizontal_iter(const camera_object* camera) {
+  return scale3(
+      1 / camera->lense_pixel_density, get_lense_horizontal_unit(camera)
+  );
+}
+
+vector3 get_lense_vertical_iter(const camera_object* camera) {
+  return scale3(
+      1 / camera->lense_pixel_density, get_lense_vertical_unit(camera)
+  );
+}
+
 // does the parsing of object types sphere, triangle, plane and returns the
 // requested pointer of an objects parameter.
 void* get_object_parameter(char pram_type, object obj) {
@@ -19,7 +53,7 @@ void* get_object_parameter(char pram_type, object obj) {
     } else if (obj.type == 'p') {
       return ((plane*)obj.object_pointer)->mat;
     } else {
-      puts("unrecognized object type\n");
+      puts("unrecognized object type");
       return NULL;
     }
   } else if (pram_type == 'n') {
@@ -104,7 +138,7 @@ vector3 get_color_of_point(
     vect3d intersection_point,
     closest_object cobj,
     object_manager* objm,
-    camera* camera_object,
+    camera_object* camera_object,
     vector3 ambient_light_color,
     int reflection_depth,
     int refraction_depth
@@ -150,7 +184,7 @@ vector3 get_color_of_point(
         maxv(
             0,
             dot(make_unit_vect(
-                    intersection_point, from_vector3(camera_object->camera_pos)
+                    intersection_point, from_vector3(camera_object->focus)
                 ),
                 scale(reflect_ray(to_light_direction, suface_normal), -1))
         ),
@@ -315,7 +349,7 @@ vect3d refract_ray(
   float cosI  = -dot(suface_normal, ray_direction);
   float sinT2 = n * n * (1.0 - (cosI * cosI));
   if (sinT2 > 1) {
-    puts("invalid refraction indecies\n");
+    puts("invalid refraction indices");
   }
   float cosT = sqrt(1.0 - sinT2);
 
@@ -340,7 +374,7 @@ vect3d refract_ray(
       cosI  = -dot(suface_normal, ray_direction);
       sinT2 = n * n * (1.0 - (cosI * cosI));
       if (sinT2 > 1) {
-        puts("invalid refraction indeces\n");
+        puts("invalid sphere refraction indices");
       }
       cosT = sqrt(1.0 - sinT2);
 
@@ -420,9 +454,10 @@ float triangle_intersection(
       return -1;
     } else {
       vect3d p = add(start_pos, scale(ray_direction, d));
-      if (dot(normal, cross(sub(self->p2, self->p1), sub(p, self->p1))) > 0) {
-        if (dot(normal, cross(sub(self->p3, self->p2), sub(p, self->p2))) > 0) {
-          if (dot(normal, cross(sub(self->p1, self->p3), sub(p, self->p3)))
+      if (dot(normal, cross3(sub(self->p2, self->p1), sub(p, self->p1))) > 0) {
+        if (dot(normal, cross3(sub(self->p3, self->p2), sub(p, self->p2)))
+            > 0) {
+          if (dot(normal, cross3(sub(self->p1, self->p3), sub(p, self->p3)))
               > 0) {
             return d;
           }
@@ -470,10 +505,10 @@ vect3d triangle_normal(vect3d intersection_point, void* obj_prt) {
   triangle* self = (triangle*)obj_prt;
   if (self->invert_normal) {
     return scale(
-        normalize(cross(sub(self->p2, self->p1), sub(self->p3, self->p1))), -1
+        normalize(cross3(sub(self->p2, self->p1), sub(self->p3, self->p1))), -1
     );
   } else {
-    return normalize(cross(sub(self->p2, self->p1), sub(self->p3, self->p1)));
+    return normalize(cross3(sub(self->p2, self->p1), sub(self->p3, self->p1)));
   }
 }
 

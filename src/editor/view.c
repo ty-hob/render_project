@@ -23,7 +23,7 @@ editor ed;
 camera tmpl_camera;
 sphere tmpl_sphere;
 
-object* objs = NULL;
+object* objs      = NULL;
 size_t objs_index = 0;
 
 // FUNCTION DEFINITIONS
@@ -54,44 +54,44 @@ void init_view() {
   vw.pos.v1 = 0;
   vw.pos.v2 = 0;
 
-  vw.zoom = 1;
-  vw.zoom_in_fact = 1.1;
+  vw.zoom          = 1;
+  vw.zoom_in_fact  = 1.1;
   vw.zoom_out_fact = 0.9;
 
   // movement (not moving)
-  vw.acceleration = 1;
+  vw.acceleration  = 1;
   vw.deaceleration = 1.5;
   for (size_t i = 0; i < 4; i++) {
     vw.is_accelerateing[i] = false;
-    vw.velocities[i] = 0;
+    vw.velocities[i]       = 0;
   }
 }
 
 // sets default values of editor
 void init_editor() {
-  ed.edit_mode = MOVE_EDIT_MODE;
-  ed.event_left_click = false;
+  ed.edit_mode         = MOVE_EDIT_MODE;
+  ed.event_left_click  = false;
   ed.event_right_click = false;
   ed.event_tab_pressed = false;
-  ed.event_q_pressed = false;
+  ed.event_q_pressed   = false;
 
-  ed.edp = NULL;
+  ed.edp       = NULL;
   ed.edp_index = 0;
 
-  ed.moveable_points = NULL;
+  ed.moveable_points       = NULL;
   ed.moveable_points_index = 0;
-  ed.moveing_point = -1;
-  ed.prev_pos = null_vect3d;
+  ed.moveing_point         = -1;
+  ed.prev_pos              = null_vect3d;
 
   ed.object_type = 0;
 
   // template objs
-  tmpl_camera.focus = null_vect3d;
+  tmpl_camera.focus           = null_vect3d;
   tmpl_camera.lense_center.v1 = 50;
   tmpl_camera.lense_center.v2 = 50;
   tmpl_camera.lense_center.v3 = 0;
-  tmpl_camera.lense_width = 200;
-  tmpl_camera.lense_height = 100;
+  tmpl_camera.lense_width     = 200;
+  tmpl_camera.lense_height    = 100;
 
   tmpl_sphere.center = null_vect3d;
   tmpl_sphere.radius = 100;
@@ -309,7 +309,7 @@ void update_view() {
 void update_editor() {
   // switch edit modes
   if (ed.event_tab_pressed == true) {
-    ed.edit_mode = (ed.edit_mode + 1) % 4;
+    ed.edit_mode         = (ed.edit_mode + 1) % 4;
     ed.event_tab_pressed = false;
   }
   // parse input acordint to current edit mode
@@ -324,7 +324,7 @@ void update_editor() {
                     sub2d(mp, scene_point_to_window_point(*(ed.edp[i].point)))
                 )
                 < 5) {
-              ed.prev_pos = *(ed.edp[i].point);
+              ed.prev_pos      = *(ed.edp[i].point);
               ed.moveing_point = i;
               break;
             }
@@ -350,14 +350,14 @@ void update_editor() {
 
       if (ed.moveing_point != -1) {
         *(ed.edp[ed.moveing_point].point) = ed.prev_pos;
-        ed.moveing_point = -1;
+        ed.moveing_point                  = -1;
       }
 
       ed.event_right_click = false;
     }
   } else if (ed.edit_mode == ADD_EDIT_MODE) {
     if (ed.event_q_pressed == true) {
-      ed.object_type = (ed.object_type + 1) % 2;
+      ed.object_type     = (ed.object_type + 1) % 2;
       ed.event_q_pressed = false;
     }
     if (ed.object_type == CAMERA_OBJECT) {
@@ -397,9 +397,9 @@ void update_editor() {
             (ed.edp[i].parent_obj)->object_pointer = NULL;
 
             // delete editor point
-            ed.edp[i].point = NULL;
+            ed.edp[i].point      = NULL;
             ed.edp[i].parent_obj = NULL;
-            ed.edp[i].scalar = NULL;
+            ed.edp[i].scalar     = NULL;
 
             break;
           }
@@ -433,13 +433,13 @@ object* add_obj(void* obj_prt, size_t obj_type) {
       return NULL;
     }
     objs[objs_index].object_pointer = obj_prt;
-    objs[objs_index].object_type = obj_type;
+    objs[objs_index].object_type    = obj_type;
     objs_index += 1;
     return objs + (objs_index - 1);
   } else {
     // found empty space in array
     objs[i].object_pointer = obj_prt;
-    objs[i].object_type = obj_type;
+    objs[i].object_type    = obj_type;
     return objs + i;
   }
 }
@@ -462,14 +462,14 @@ void add_editor_point(object* parent, vect3d* p, double* s) {
       return;
     }
     ed.edp[ed.edp_index].parent_obj = parent;
-    ed.edp[ed.edp_index].point = p;
-    ed.edp[ed.edp_index].scalar = s;
+    ed.edp[ed.edp_index].point      = p;
+    ed.edp[ed.edp_index].scalar     = s;
     ed.edp_index += 1;
   } else {
     // fill space with index i
     ed.edp[i].parent_obj = parent;
-    ed.edp[i].point = p;
-    ed.edp[i].scalar = s;
+    ed.edp[i].point      = p;
+    ed.edp[i].scalar     = s;
   }
 }
 
@@ -480,7 +480,7 @@ void add_camera(camera c) {
     printf("malloc failed\n");
     return;
   }
-  *cam_prt = c;
+  *cam_prt        = c;
   object* obj_prt = add_obj(cam_prt, CAMERA_OBJECT);
   add_editor_point(obj_prt, &(cam_prt->focus), NULL);
   add_editor_point(obj_prt, &(cam_prt->lense_center), NULL);
@@ -493,7 +493,7 @@ void add_sphere(sphere s) {
     printf("malloc failed\n");
     return;
   }
-  *sph_prt = s;
+  *sph_prt        = s;
   object* obj_prt = add_obj(sph_prt, SPHERE_OBJECT);
   add_editor_point(obj_prt, &(sph_prt->center), NULL);
 }
@@ -524,7 +524,7 @@ void draw_camera(camera c) {
   draw_line(c.focus, c.lense_center);
 
   vect3d hh = scale3d(
-      direction3d(cross_prod3d(sub3d(c.lense_center, c.focus), i_hat)),
+      direction3d(cross_prod3d(sub3d(c.lense_center, c.focus), j_hat)),
       c.lense_height / 2
   );
   vect3d hw = scale3d(
@@ -626,8 +626,8 @@ void draw_axis() {
         0,
         255
     );
-    d.v1 = WIN_WIDTH - 47;
-    d.v2 = (int)c.v2;
+    d.v1     = WIN_WIDTH - 47;
+    d.v2     = (int)c.v2;
     tick_pos = window_point_to_scene_point(d);
     sprintf(dist_marker, "%d ", (int)tick_pos.v1);
     stringRGBA(
@@ -641,8 +641,8 @@ void draw_axis() {
     lineRGBA(wd.renderer, (int)c.v1 + 5, 10, (int)c.v1, 0, 0, 255, 0, 255);
     // dist marker and val
     lineRGBA(wd.renderer, (int)c.v1 - 5, 47, (int)c.v1 + 5, 47, 0, 255, 0, 255);
-    d.v1 = (int)c.v1;
-    d.v2 = 47;
+    d.v1     = (int)c.v1;
+    d.v2     = 47;
     tick_pos = window_point_to_scene_point(d);
     sprintf(dist_marker, "%d ", (int)tick_pos.v2);
     stringRGBA(wd.renderer, (int)c.v1 + 6, 39, dist_marker, 0, 255, 0, 255);
@@ -686,8 +686,8 @@ void draw_axis() {
         0,
         255
     );
-    d.v1 = WIN_WIDTH - 47;
-    d.v2 = (int)c.v2;
+    d.v1     = WIN_WIDTH - 47;
+    d.v2     = (int)c.v2;
     tick_pos = window_point_to_scene_point(d);
     sprintf(dist_marker, "%d ", (int)tick_pos.v1);
     stringRGBA(
@@ -701,8 +701,8 @@ void draw_axis() {
     lineRGBA(wd.renderer, (int)c.v1 + 5, 10, (int)c.v1, 0, 0, 0, 255, 255);
     // dist marker and val
     lineRGBA(wd.renderer, (int)c.v1 - 5, 47, (int)c.v1 + 5, 47, 0, 0, 255, 255);
-    d.v1 = (int)c.v1;
-    d.v2 = 47;
+    d.v1     = (int)c.v1;
+    d.v2     = 47;
     tick_pos = window_point_to_scene_point(d);
     sprintf(dist_marker, "%d ", (int)tick_pos.v3);
     stringRGBA(wd.renderer, (int)c.v1 + 6, 39, dist_marker, 0, 0, 255, 255);
@@ -746,8 +746,8 @@ void draw_axis() {
         0,
         255
     );
-    d.v1 = WIN_WIDTH - 47;
-    d.v2 = (int)c.v2;
+    d.v1     = WIN_WIDTH - 47;
+    d.v2     = (int)c.v2;
     tick_pos = window_point_to_scene_point(d);
     sprintf(dist_marker, "%d ", (int)tick_pos.v2);
     stringRGBA(
@@ -761,8 +761,8 @@ void draw_axis() {
     lineRGBA(wd.renderer, (int)c.v1 + 5, 10, (int)c.v1, 0, 0, 0, 255, 255);
     // dist marker and val
     lineRGBA(wd.renderer, (int)c.v1 - 5, 47, (int)c.v1 + 5, 47, 0, 0, 255, 255);
-    d.v1 = (int)c.v1;
-    d.v2 = 47;
+    d.v1     = (int)c.v1;
+    d.v2     = 47;
     tick_pos = window_point_to_scene_point(d);
     sprintf(dist_marker, "%d ", (int)tick_pos.v3);
     stringRGBA(wd.renderer, (int)c.v1 + 6, 39, dist_marker, 0, 0, 255, 255);

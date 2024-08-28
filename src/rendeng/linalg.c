@@ -52,7 +52,7 @@ float dot(vect3d a, vect3d b) {
 }
 
 // calculates the ros porduct of vectors a and b (a x b)
-vect3d cross(vect3d a, vect3d b) {
+vect3d cross3(vect3d a, vect3d b) {
   vect3d c;
   c.values[0] = a.values[1] * b.values[2] - a.values[2] * b.values[1];
   c.values[1] = a.values[2] * b.values[0] - a.values[0] * b.values[2];

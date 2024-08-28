@@ -37,8 +37,8 @@ extern vect3d scale(vect3d a, float s);
 // calculates the dot product value for 3d vectors a and b
 extern float dot(vect3d a, vect3d b);
 
-// calculates the ros porduct of vectors a and b (a x b)
-extern vect3d cross(vect3d a, vect3d b);
+// calculates the ros product of vectors a and b (a x b)
+extern vect3d cross3(vect3d a, vect3d b);
 
 // calculates the lenght of a given 3d vector a
 extern float vector_length(vect3d a);

@@ -9,9 +9,6 @@
 #include "vector.h"
 
 int main(int argc, char* argv[]) {
-  int image_width  = 200;
-  int image_height = 200;
-
   // random use defined colors
   vector3 background_color = {.5, .5, .5};
 
@@ -64,6 +61,21 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  // camera object containing information about the camera
+  camera_object camera = {//
+                          .focus               = {0, 0, 0},
+                          .lense_center        = {200, 0, 0},
+                          .lense_width         = 200,
+                          .lense_height        = 200,
+                          .lense_pixel_density = 1,
+                          .rays_per_pixel      = 3,
+                          .reflection_depth    = 4,
+                          .refraction_depth    = 4
+  };
+
+  int image_width  = camera.lense_width * camera.lense_pixel_density;
+  int image_height = camera.lense_height * camera.lense_pixel_density;
+
   image* img = new_image(image_width, image_height);
   if (img == NULL) {
     puts("failed to create new image\n");
@@ -71,48 +83,21 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  // camera object containing information about the camera
-  camera camera_object = {//
-                          .camera_pos        = null3,
-                          .distance_to_lense = 200,
-                          .lense_width       = 200,
-                          .lense_height      = 200,
-                          .rays_per_pixel    = 3,
-                          .reflection_depth  = 4,
-                          .refraction_depth  = 4
-  };
-
-  float total_rays_per_pixel
-      = camera_object.rays_per_pixel * camera_object.rays_per_pixel;
+  float total_rays_per_pixel = camera.rays_per_pixel * camera.rays_per_pixel;
 
   // setting up ray direction calculation needed values
-  vector3 lense_iter_horizontal = {//
-                                   .x = 0,
-                                   .y = camera_object.lense_width / image_width,
-                                   .z = 0
-  };
-
-  vector3 lense_iter_vertical = {//
-                                 .x = 0,
-                                 .y = 0,
-                                 .z = -camera_object.lense_height / image_height
-  };
-
-  vector3 lense_iter_start_pos
-      = {.x = camera_object.camera_pos.x + camera_object.distance_to_lense,
-         .y = camera_object.camera_pos.y - (camera_object.lense_width / 2),
-         .z = camera_object.camera_pos.z + (camera_object.lense_height / 2)};
+  vector3 lense_iter_start_pos  = get_lense_top_left_corner(&camera);
+  vector3 lense_iter_horizontal = get_lense_horizontal_iter(&camera);
+  vector3 lense_iter_vertical   = get_lense_vertical_iter(&camera);
 
   vector3 sub_ray_iter_horizontal = null3;
   vector3 sub_ray_iter_vertical   = null3;
 
-  if (camera_object.rays_per_pixel > 1) {
-    sub_ray_iter_horizontal = scale3(
-        1.0 / (double)camera_object.rays_per_pixel, lense_iter_horizontal
-    );
-    sub_ray_iter_vertical = scale3(
-        1.0 / (double)camera_object.rays_per_pixel, lense_iter_vertical
-    );
+  if (camera.rays_per_pixel > 1) {
+    sub_ray_iter_horizontal
+        = scale3(1.0 / (double)camera.rays_per_pixel, lense_iter_horizontal);
+    sub_ray_iter_vertical
+        = scale3(1.0 / (double)camera.rays_per_pixel, lense_iter_vertical);
   }
 
   // calculate ambient light
@@ -142,8 +127,8 @@ int main(int argc, char* argv[]) {
       );
 
       // calculate multiple rays for each pixel
-      for (int ray_y = 0; ray_y < camera_object.rays_per_pixel; ray_y++) {
-        for (int ray_x = 0; ray_x < camera_object.rays_per_pixel; ray_x++) {
+      for (int ray_y = 0; ray_y < camera.rays_per_pixel; ray_y++) {
+        for (int ray_x = 0; ray_x < camera.rays_per_pixel; ray_x++) {
           // calculate ray direction
           //
           // unit vector calculated for every pixels sub ray.
@@ -157,13 +142,13 @@ int main(int argc, char* argv[]) {
                       scale3(ray_y, sub_ray_iter_vertical)
                   )
               ),
-              camera_object.camera_pos
+              camera.focus
           ));
 
           // find distance to closes object if it exists
           closest_object closest_obj = get_closest_object(
               &obj_manager,
-              from_vector3(camera_object.camera_pos),
+              from_vector3(camera.focus),
               from_vector3(ray_direction)
           );
 
@@ -181,10 +166,10 @@ int main(int argc, char* argv[]) {
                   from_vector3(scale3(closest_obj.distance, ray_direction)),
                   closest_obj,
                   &obj_manager,
-                  &camera_object,
+                  &camera,
                   ambient_light_color,
-                  camera_object.reflection_depth,
-                  camera_object.refraction_depth
+                  camera.reflection_depth,
+                  camera.refraction_depth
               )
           );
         }
