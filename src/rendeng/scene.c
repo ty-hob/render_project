@@ -42,7 +42,7 @@ char* read_line(FILE* file) {
   return line;
 }
 
-error* load_scene(char* filename, object_manager* objm) {
+error* load_scene(char* filename, object_manager* obj_manager) {
   printf("loading scene: %s\n", filename);
 
   FILE* file = fopen(filename, "r");
@@ -80,9 +80,10 @@ error* load_scene(char* filename, object_manager* objm) {
           &db,
           &sr,
           &sg,
-          &sb);
+          &sb
+      );
 
-      add_light(objm, x, y, z, dr, dg, db, sr, sg, sb);
+      add_light(obj_manager, x, y, z, dr, dg, db, sr, sg, sb);
     } else if (line[0] == 'm') { // add material
       float dr, dg, db;
       int sc;
@@ -98,9 +99,10 @@ error* load_scene(char* filename, object_manager* objm) {
           &sc,
           &reflc,
           &refrc,
-          &refri);
+          &refri
+      );
 
-      add_material(objm, dr, dg, db, sc, reflc, refrc, refri);
+      add_material(obj_manager, dr, dg, db, sc, reflc, refrc, refri);
     } else if (line[0] == 'p') { // add plane
       float px, py, pz, nx, ny, nz;
       int mat;
@@ -115,24 +117,56 @@ error* load_scene(char* filename, object_manager* objm) {
           &nx,
           &ny,
           &nz,
-          &mat);
+          &mat
+      );
 
-      add_plane(objm, px, py, pz, nx, ny, nz, &objm->materials[mat]);
+      add_plane(
+          obj_manager, px, py, pz, nx, ny, nz, &obj_manager->materials[mat]
+      );
     } else if (line[0] == 's') { // add sphere
       float cx, cy, cz, radius;
       int mat;
 
       sscanf(
-          line,
-          "%c %f %f %f %f %d",
-          &object_type,
-          &cx,
-          &cy,
-          &cz,
-          &radius,
-          &mat);
+          line, "%c %f %f %f %f %d", &object_type, &cx, &cy, &cz, &radius, &mat
+      );
 
-      add_sphere(objm, cx, cy, cz, radius, &objm->materials[mat]);
+      add_sphere(obj_manager, cx, cy, cz, radius, &obj_manager->materials[mat]);
+    } else if (line[0] == 't') { // add triangle
+      float p1x, p1y, p1z, p2x, p2y, p2z, p3x, p3y, p3z;
+      int invert_normal, mat;
+
+      sscanf(
+          line,
+          "%c %f %f %f %f %f %f %f %f %f %d %d",
+          &object_type,
+          &p1x,
+          &p1y,
+          &p1z,
+          &p2x,
+          &p2y,
+          &p2z,
+          &p3x,
+          &p3y,
+          &p3z,
+          &invert_normal,
+          &mat
+      );
+
+      add_triangle(
+          obj_manager,
+          p1x,
+          p1y,
+          p1z,
+          p2x,
+          p2y,
+          p2z,
+          p3x,
+          p3y,
+          p3z,
+          &obj_manager->materials[mat],
+          invert_normal
+      );
     }
 
     free(line);

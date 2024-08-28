@@ -7,9 +7,6 @@
 #define MAX_LIGHT_OBJECTS 10
 #define MAX_MATERIALS 10
 
-#define MAX_REFLECTIONS 4
-#define MAX_REFRACTIONS 4
-
 #include <stdbool.h>
 
 #include "rendeng/image.h"
@@ -23,6 +20,8 @@ typedef struct CAMERA {
   float lense_width;
   float lense_height;
   int rays_per_pixel;
+  int reflection_depth;
+  int refraction_depth;
 } camera;
 
 typedef struct MATERIAL {

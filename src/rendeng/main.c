@@ -77,8 +77,11 @@ int main(int argc, char* argv[]) {
                           .distance_to_lense = 200,
                           .lense_width       = 200,
                           .lense_height      = 200,
-                          .rays_per_pixel    = 3
+                          .rays_per_pixel    = 3,
+                          .reflection_depth  = 4,
+                          .refraction_depth  = 4
   };
+
   float total_rays_per_pixel
       = camera_object.rays_per_pixel * camera_object.rays_per_pixel;
 
@@ -180,8 +183,8 @@ int main(int argc, char* argv[]) {
                   &obj_manager,
                   &camera_object,
                   ambient_light_color,
-                  0,
-                  0
+                  camera_object.reflection_depth,
+                  camera_object.refraction_depth
               )
           );
         }

@@ -106,8 +106,8 @@ vector3 get_color_of_point(
     object_manager* objm,
     camera* camera_object,
     vector3 ambient_light_color,
-    int reflection_count,
-    int refraction_count
+    int reflection_depth,
+    int refraction_depth
 ) {
   // get the material of the object
   material* mat = get_object_parameter('m', cobj.c_object);
@@ -166,7 +166,7 @@ vector3 get_color_of_point(
   }
 
   // apply reflection
-  if (reflection_count < MAX_REFLECTIONS) {
+  if (reflection_depth > 0) {
     if (mat->reflectiveness_const > 0) {
       // get the reflection ray
       ray_direction = reflect_ray(ray_direction, suface_normal);
@@ -185,8 +185,8 @@ vector3 get_color_of_point(
             objm,
             camera_object,
             ambient_light_color,
-            reflection_count + 1,
-            0
+            reflection_depth - 1,
+            refraction_depth - 1
         );
 
         // apply the color
@@ -197,7 +197,7 @@ vector3 get_color_of_point(
   }
 
   // apply refraction
-  if (refraction_count < MAX_REFRACTIONS) {
+  if (refraction_depth > 0) {
     if (mat->refractiveness_const > 0) {
       // get rfractive ray
       ray_direction = refract_ray(cobj, ray_direction, &intersection_point);
@@ -217,8 +217,8 @@ vector3 get_color_of_point(
             objm,
             camera_object,
             ambient_light_color,
-            0,
-            refraction_count + 1
+            reflection_depth - 1,
+            refraction_depth - 1
         );
 
         color
