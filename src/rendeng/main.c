@@ -6,9 +6,12 @@
 #include "rendeng/linalg.h"
 #include "rendeng/objs.h"
 #include "rendeng/scene.h"
+#include "rendeng/version.h"
 #include "vector.h"
 
 int main(int argc, char* argv[]) {
+  printf("rendeng %d.%d\n", RENDENG_VERSION_MAJOR, RENDENG_VERSION_MINOR);
+
   // random use defined colors
   vector3 background_color = {.5, .5, .5};
 

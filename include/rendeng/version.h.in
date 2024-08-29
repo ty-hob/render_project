@@ -1,0 +1,7 @@
+#ifndef VERSION_H
+#define VERSION_H
+
+#define RENDENG_VERSION_MAJOR @rendeng_VERSION_MAJOR@
+#define RENDENG_VERSION_MINOR @rendeng_VERSION_MINOR@
+
+#endif
