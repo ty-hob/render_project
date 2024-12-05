@@ -1,0 +1,107 @@
+{
+  "name": "test scene",
+  "camera": {
+    "focus": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "lense_center": {
+      "x": 200,
+      "y": 0,
+      "z": 0
+    },
+    "lense_width": 200,
+    "lense_height": 200,
+    "lense_pixel_density": 1,
+    "rays_per_pixel": 3,
+    "reflection_depth": 4,
+    "refraction_depth": 4
+  },
+  "materials": [
+    {
+      "name": "side plane material",
+      "diffuse_color": {
+        "x": 0.1,
+        "y": 0.7,
+        "z": 0.5
+      },
+      "shininess_const": 1000,
+      "reflectiveness_const": 0,
+      "refractiveness_const": 0,
+      "refractive_index": 0
+    },
+    {
+      "name": "bottom plane material",
+      "diffuse_color": {
+        "x": 0.5,
+        "y": 1,
+        "z": 0.3
+      },
+      "shininess_const": 50,
+      "reflectiveness_const": 0,
+      "refractiveness_const": 0,
+      "refractive_index": 0
+    },
+    {
+      "name": "small red shiny sphere",
+      "diffuse_color": {
+        "x": 1,
+        "y": 0,
+        "z": 0
+      },
+      "shininess_const": 100,
+      "reflectiveness_const": 0.3,
+      "refractiveness_const": 0.7,
+      "refractive_index": 50
+    },
+    {
+      "name": "small transparent sphere",
+      "diffuse_color": {
+        "x": 0.1,
+        "y": 0.1,
+        "z": 0.1
+      },
+      "shininess_const": 100,
+      "reflectiveness_const": 0.1,
+      "refractiveness_const": 1,
+      "refractive_index": 500
+    },
+    {
+      "name": "sphere 3",
+      "diffuse_color": {
+        "x": 0.1,
+        "y": 0.7,
+        "z": 0.3
+      },
+      "shininess_const": 100,
+      "reflectiveness_const": 0.3,
+      "refractiveness_const": 0,
+      "refractive_index": 1
+    },
+    {
+      "name": "sphere 4",
+      "diffuse_color": {
+        "x": 0.8,
+        "y": 0.4,
+        "z": 0.4
+      },
+      "shininess_const": 300,
+      "reflectiveness_const": 0.1,
+      "refractiveness_const": 0,
+      "refractive_index": 1
+    },
+    {
+      "name": "roof plane",
+      "diffuse_color": {
+        "x": 0,
+        "y": 0.1,
+        "z": 0.9
+      },
+      "shininess_const": 100,
+      "reflectiveness_const": 0,
+      "refractiveness_const": 0,
+      "refractive_index": 0
+    }
+  ]
+}

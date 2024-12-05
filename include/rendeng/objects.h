@@ -1,5 +1,5 @@
-#ifndef OBJS
-#define OBJS
+#ifndef OBJECTS_H
+#define OBJECTS_H
 
 #define MAX_SPHERE_OBJECTS 10
 #define MAX_PLANE_OBJECTS 10
@@ -18,9 +18,6 @@ typedef struct CAMERA_OBJECT {
   vector3 focus;
   vector3 lense_center;
 
-  // vector3 camera_pos;
-  // float distance_to_lense;
-
   double lense_width;
   double lense_height;
   // the amount of pixels per unit of lense width/height
@@ -32,19 +29,20 @@ typedef struct CAMERA_OBJECT {
   int refraction_depth;
 } camera_object;
 
-typedef struct MATERIAL {
+typedef struct MATERIAL_OBJECT {
+  char* name;
   vector3 diffuse_color;
   int shininess_const;
-  float reflectiveness_const;
-  float refractiveness_const;
-  float refractive_index;
-} material;
+  double reflectiveness_const;
+  double refractiveness_const;
+  double refractive_index;
+} material_object;
 
 // struct containing information about a sphere object
 typedef struct SPHERE {
   vect3d center;
   float radius;
-  material* mat;
+  material_object* mat;
   float (*check_intersection)(vect3d, vect3d, void*);
   vect3d (*get_normal)(vect3d, void*); // change to get normal of point of
                                        // intersection and make get reflection
@@ -57,7 +55,7 @@ typedef struct TRIANGLE {
   vect3d p1;
   vect3d p2;
   vect3d p3;
-  material* mat;
+  material_object* mat;
   bool invert_normal;
   float (*check_intersection)(vect3d, vect3d, void*);
   vect3d (*get_normal)(vect3d, void*);
@@ -66,7 +64,7 @@ typedef struct TRIANGLE {
 typedef struct PLANE {
   vect3d point;
   vect3d normal;
-  material* mat;
+  material_object* mat;
   float (*check_intersection)(vect3d, vect3d, void*);
   vect3d (*get_normal)(vect3d, void*);
 } plane;
@@ -77,6 +75,16 @@ typedef struct LIGHT {
   vector3 diffuse_light_color;
   vector3 specular_light_color;
 } light;
+
+// defines a scene
+typedef struct SCENE_OBJECT {
+  char* name;
+  camera_object camera;
+
+  material_object* materials;
+  int materials_size;
+
+} scene_object;
 
 // struct for dealing with different object types
 // created for use in the future when i add polygons
@@ -104,7 +112,7 @@ typedef struct OBJECT_MANAGER {
   light* light_objects;
   int light_object_count;
 
-  material* materials;
+  material_object* materials;
   int material_count;
 } object_manager;
 
@@ -116,7 +124,7 @@ typedef struct CLOSEST_OBJECT {
                    // object pointer
 } closest_object;
 
-color trace(camera_object* camera, vector3 ray_direction);
+void free_scene(scene_object* scene);
 
 // returns the top left corner of the lense.
 vector3 get_lense_top_left_corner(const camera_object* camera);
@@ -198,7 +206,7 @@ extern void add_sphere(
     float cy,
     float cz,
     float radius,
-    material* mat
+    material_object* mat
 );
 
 // adds triangle object to scene with coners in points p1, p2, p3. with a
@@ -214,7 +222,7 @@ extern void add_triangle(
     float p3x,
     float p3y,
     float p3z,
-    material* mat,
+    material_object* mat,
     bool invert_normal
 );
 
@@ -229,7 +237,7 @@ extern void add_plane(
     float nx,
     float ny,
     float nz,
-    material* mat
+    material_object* mat
 );
 
 // adds a light object to sceene

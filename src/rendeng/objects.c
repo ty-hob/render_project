@@ -1,9 +1,14 @@
-#include "rendeng/objs.h"
-#include "rendeng/linalg.h"
-#include "vector.h"
 #include <math.h>
-#include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
+
+#include "rendeng/objects.h"
+
+void free_scene(scene_object* scene) {
+  free(scene->name);
+  free(scene->materials);
+  free(scene);
+}
 
 vector3 get_lense_top_left_corner(const camera_object* camera) {
   return add3(
@@ -144,7 +149,7 @@ vector3 get_color_of_point(
     int refraction_depth
 ) {
   // get the material of the object
-  material* mat = get_object_parameter('m', cobj.c_object);
+  material_object* mat = get_object_parameter('m', cobj.c_object);
 
   // get suface normal
   vect3d (*get_normal)(vect3d, void*)
@@ -343,7 +348,7 @@ vect3d refract_ray(
       = get_normal(*intersection_point, cobj.c_object.object_pointer);
 
   // get material of cobj
-  material* mat = get_object_parameter('m', cobj.c_object);
+  material_object* mat = get_object_parameter('m', cobj.c_object);
 
   float n     = 1 / mat->refractive_index;
   float cosI  = -dot(suface_normal, ray_direction);
@@ -554,7 +559,7 @@ void add_sphere(
     float cy,
     float cz,
     float radius,
-    material* mat
+    material_object* mat
 ) {
   if (objm->sphere_object_count >= MAX_SPHERE_OBJECTS) {
     puts("max sphere object count in scene exeded\n");
@@ -590,7 +595,7 @@ void add_triangle(
     float p3x,
     float p3y,
     float p3z,
-    material* mat,
+    material_object* mat,
     bool invert_normal
 ) {
   if (objm->triangle_object_count >= MAX_TRIANGLE_OBJECTS) {
@@ -638,7 +643,7 @@ void add_plane(
     float nx,
     float ny,
     float nz,
-    material* mat
+    material_object* mat
 ) {
   if (objm->plane_object_count >= MAX_PLANE_OBJECTS) {
     puts("max plane object count in scene exeded\n");

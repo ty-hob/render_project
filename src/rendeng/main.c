@@ -1,14 +1,34 @@
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-#include "rendeng/error.h"
+#include "error.h"
 #include "rendeng/image.h"
 #include "rendeng/linalg.h"
-#include "rendeng/objs.h"
+#include "rendeng/objects.h"
 #include "rendeng/scene.h"
 #include "vector.h"
 
 int main(int argc, char* argv[]) {
+  char* scene_filename = "scene.json";
+
+  scene_object* scene = malloc(sizeof(scene_object));
+  if (scene == NULL) {
+    puts("failed to allocate memory for scene object\n");
+    return 1;
+  }
+
+  printf("loading scene from: %s\n", scene_filename);
+
+  error* err1 = load_from_json(scene, scene_filename);
+  if (err1 != NULL) {
+    printf("error: %s\n", err1->message);
+    free_error(err1);
+    return 1;
+  }
+
+  printf("loaded scene: %s \n", scene->name);
+
   // random use defined colors
   vector3 background_color = {.5, .5, .5};
 
@@ -21,7 +41,7 @@ int main(int argc, char* argv[]) {
 
   light light_objects[MAX_LIGHT_OBJECTS];
 
-  material materials[MAX_MATERIALS];
+  material_object materials[MAX_MATERIALS];
 
   object scene_objects
       [MAX_SPHERE_OBJECTS + MAX_TRIANGLE_OBJECTS + MAX_PLANE_OBJECTS
@@ -44,14 +64,19 @@ int main(int argc, char* argv[]) {
   obj_manager.light_objects      = &light_objects[0];
   obj_manager.light_object_count = 0;
 
-  obj_manager.materials      = &materials[0];
-  obj_manager.material_count = 0;
+  obj_manager.materials      = scene->materials;
+  obj_manager.material_count = scene->materials_size;
+
+  // obj_manager.materials      = &materials[0];
+  // obj_manager.material_count = 0;
 
   if (argc != 2) {
     printf("invalid usage: rendeng [scene file name]\n");
 
     return 0;
   }
+
+  printf("loading scene: %s\n", argv[1]);
 
   error* err = load_scene(argv[1], &obj_manager);
   if (err != NULL) {
@@ -62,16 +87,18 @@ int main(int argc, char* argv[]) {
   }
 
   // camera object containing information about the camera
-  camera_object camera = {//
-                          .focus               = {0, 0, 0},
-                          .lense_center        = {200, 0, 0},
-                          .lense_width         = 200,
-                          .lense_height        = 200,
-                          .lense_pixel_density = 1,
-                          .rays_per_pixel      = 3,
-                          .reflection_depth    = 4,
-                          .refraction_depth    = 4
-  };
+  camera_object camera = scene->camera;
+
+  // {//
+  //                         .focus               = {0, 0, 0},
+  //                         .lense_center        = {200, 0, 0},
+  //                         .lense_width         = 200,
+  //                         .lense_height        = 200,
+  //                         .lense_pixel_density = 1,
+  //                         .rays_per_pixel      = 3,
+  //                         .reflection_depth    = 4,
+  //                         .refraction_depth    = 4
+  // };
 
   int image_width  = camera.lense_width * camera.lense_pixel_density;
   int image_height = camera.lense_height * camera.lense_pixel_density;
@@ -186,6 +213,7 @@ int main(int argc, char* argv[]) {
 
   save_image(img, "render_result.ppm");
   free_image(img);
+  free_scene(scene);
 
   return 0;
 }

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "rendeng/error.h"
+#include "error.h"
 
 error* new_error(const char* message) {
   error* e = malloc(sizeof(error));
